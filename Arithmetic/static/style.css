@@ -1,0 +1,1006 @@
+
+/* =========================================
+   MATH SOLVER v2.0 — MAIN STYLESHEET
+   ========================================= */
+
+:root {
+    font-family: Arial, Helvetica, sans-serif;
+    color: #202536;
+    background: #f3f5fa;
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+}
+
+html {
+    height: 100%;
+    overflow: hidden;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    height: 100dvh;
+    min-height: 0;
+    overflow: hidden;
+}
+
+button {
+    font: inherit;
+    -webkit-tap-highlight-color: transparent;
+}
+
+button:focus-visible,
+.math-slot:focus-visible {
+    outline: 3px solid rgba(83, 101, 216, 0.3);
+    outline-offset: 2px;
+}
+
+/* =========================================
+   TOP NAVIGATION
+   ========================================= */
+
+.topbar {
+    min-height: 64px;
+    padding: 0 6%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #fff;
+    border-bottom: 1px solid #e5e8f0;
+}
+
+.brand {
+    color: #202536;
+    text-decoration: none;
+    font-size: 20px;
+    font-weight: 750;
+}
+
+.current-section {
+    color: #5365d8;
+    font-weight: 700;
+}
+
+.page {
+    display: flex;
+    flex: 1;
+    min-height: 0;
+    padding: 24px 20px;
+    overflow: hidden;
+}
+
+/* =========================================
+   CALCULATOR CARD
+   ========================================= */
+
+.calculator {
+    width: 100%;
+    max-width: 1200px;
+    height: 100%;
+    min-height: 0;
+    margin: 0 auto;
+    padding: 26px 30px;
+    display: flex;
+    flex-direction: column;
+    background: #fff;
+    border: 1px solid #e7e9f1;
+    border-radius: 20px;
+    box-shadow: 0 12px 35px rgba(30, 40, 75, 0.07);
+}
+
+.calculator-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 22px;
+}
+
+.eyebrow-row {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    margin-bottom: 6px;
+}
+
+.eyebrow {
+    margin: 0;
+    color: #6876d9;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+}
+
+.version-label {
+    padding: 3px 7px;
+    color: #6876d9;
+    background: #eef0ff;
+    border-radius: 5px;
+    font-size: 10px;
+    font-weight: 750;
+}
+
+h1 {
+    margin: 0;
+    font-size: 28px;
+}
+
+.subtitle {
+    margin: 6px 0 0;
+    color: #7a8192;
+    font-size: 13px;
+}
+
+/* =========================================
+   SHIFT AND DEG/RAD CONTROLS
+   ========================================= */
+
+.calculator-controls {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 8px;
+}
+
+.angle-controls {
+    display: flex;
+    gap: 6px;
+}
+
+.small-button {
+    min-width: 58px;
+    padding: 9px 11px;
+    color: #5365d8;
+    background: #eef0ff;
+    border: 1px solid transparent;
+    border-radius: 9px;
+    font-size: 12px;
+    font-weight: 750;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+}
+
+.small-button:hover {
+    background: #e3e7ff;
+}
+
+#shift-toggle[aria-pressed="true"] {
+    color: #fff;
+    background: #5365d8;
+    border-color: #5365d8;
+}
+
+#deg-toggle.active,
+#rad-toggle.active {
+    color: #fff;
+    background: #5365d8;
+    border-color: #5365d8;
+}
+
+/* =========================================
+   EXPRESSION EDITOR
+   ========================================= */
+
+.expression-section {
+    margin-bottom: 14px;
+}
+
+.section-label-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 7px;
+}
+
+.input-label {
+    color: #687083;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.text-button {
+    padding: 4px 7px;
+    color: #6876d9;
+    background: transparent;
+    border: 0;
+    border-radius: 5px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.text-button:hover {
+    background: #eef0ff;
+}
+
+.expression-editor {
+    width: 100%;
+    min-height: 100px;
+    max-height: 300px;
+    padding: 17px;
+    overflow: auto;
+    background: #fff;
+    border: 1px solid #dfe3ed;
+    border-radius: 12px;
+    outline: none;
+    color: #202536;
+    font-family: "Cambria Math", "Times New Roman", serif;
+    font-size: 25px;
+    line-height: 1.9;
+    overflow-wrap: anywhere;
+    cursor: text;
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.expression-editor:focus {
+    border-color: #6876d9;
+    box-shadow: 0 0 0 3px rgba(104, 118, 217, 0.12);
+}
+
+.editor-placeholder {
+    color: #a0a6b5;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 15px;
+    pointer-events: none;
+}
+
+.editor-hint {
+    margin: 6px 2px 0;
+    color: #9298a7;
+    font-size: 11px;
+}
+
+/* =========================================
+   MATH SLOTS AND STRUCTURES
+   ========================================= */
+
+.math-slot {
+    display: inline-block;
+    min-width: 25px;
+    min-height: 30px;
+    padding: 1px 3px;
+    color: #202536;
+    border: 1px dashed #9ba5cf;
+    border-radius: 3px;
+    outline: none;
+    vertical-align: baseline;
+    text-align: center;
+    cursor: text;
+}
+
+.math-slot:focus {
+    background: #eef0ff;
+    border: 1px solid #5365d8;
+}
+
+.math-slot[data-slot="base"],
+.math-slot[data-slot="number"] {
+    min-width: 32px;
+}
+
+.math-slot[data-slot="exponent"],
+.math-slot[data-slot="index"] {
+    min-width: 20px;
+}
+
+.math-slot[data-slot="numerator"],
+.math-slot[data-slot="denominator"],
+.math-slot[data-slot="n"],
+.math-slot[data-slot="r"] {
+    min-width: 35px;
+}
+
+.math-structure {
+    display: inline-flex;
+    position: relative;
+    align-items: center;
+    vertical-align: middle;
+    margin: 0 3px;
+    color: #202536;
+}
+
+.math-square-root,
+.math-cube-root,
+.math-nth-root {
+    display: inline-flex;
+    align-items: center;
+}
+
+.root-symbol {
+    display: inline-block;
+    font-size: 1.5em;
+    line-height: 1;
+}
+
+.math-nth-root .root-index {
+    align-self: flex-start;
+    min-width: 18px;
+    margin-right: -2px;
+    transform: translateY(-5px);
+    font-size: 0.75em;
+}
+
+.math-square,
+.math-cube,
+.math-power {
+    display: inline-flex;
+    align-items: baseline;
+}
+
+.power-exponent,
+.math-power sup {
+    display: inline-block;
+    min-width: 18px;
+    position: relative;
+    top: -0.45em;
+    font-size: 0.75em;
+    line-height: 1;
+}
+
+.math-fraction {
+    display: inline-grid;
+    grid-template-columns: minmax(35px, auto);
+    grid-template-rows: auto 2px auto;
+    justify-items: stretch;
+    align-items: center;
+    vertical-align: middle;
+    margin: 3px 5px;
+    min-width: 48px;
+}
+
+.fraction-numerator,
+.fraction-denominator {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 29px;
+    padding: 2px 5px;
+    font-size: 0.85em;
+}
+
+.fraction-line {
+    display: block;
+    width: 100%;
+    min-width: 35px;
+    height: 2px;
+    background: #202536;
+}
+
+/* =========================================
+   ANSWER PANEL
+   ========================================= */
+
+.answer-panel {
+    position: relative;
+    min-height: 105px;
+    margin: 13px 0;
+    padding: 13px 15px;
+    background: #f5f6fc;
+    border: 1px solid #eceefa;
+    border-radius: 12px;
+}
+
+.answer-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: #72798c;
+    font-size: 13px;
+}
+
+.answer-title {
+    font-weight: 700;
+}
+
+.answer-display {
+    display: block;
+    margin-top: 10px;
+    overflow-x: auto;
+    overflow-wrap: anywhere;
+    color: #202536;
+    font-family: "Cambria Math", "Times New Roman", serif;
+    font-size: clamp(23px, 4vw, 32px);
+    font-weight: 700;
+    text-align: right;
+}
+
+.answer-display math {
+    font-family: "Cambria Math", "Times New Roman", serif;
+    font-size: 1em;
+}
+
+.answer-display math[display="block"] {
+    margin-left: auto;
+}
+
+.calculator-message {
+    min-height: 14px;
+    margin: 6px 0 0;
+    color: #c34b4b;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 12px;
+}
+
+/* =========================================
+   FORMAT MENU
+   ========================================= */
+
+.format-control {
+    position: relative;
+}
+
+#format-toggle {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 7px 10px;
+    color: #5365d8;
+    background: #fff;
+    border: 1px solid #dfe3f3;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+#format-toggle:hover {
+    background: #f7f8ff;
+}
+
+.format-arrow {
+    font-size: 15px;
+}
+
+.format-menu {
+    position: absolute;
+    z-index: 20;
+    top: calc(100% + 7px);
+    right: 0;
+    width: 175px;
+    padding: 5px;
+    background: #fff;
+    border: 1px solid #e1e4ed;
+    border-radius: 10px;
+    box-shadow: 0 8px 25px rgba(25, 35, 65, 0.14);
+}
+
+.format-menu button {
+    width: 100%;
+    padding: 10px;
+    color: #30374a;
+    background: transparent;
+    border: 0;
+    border-radius: 6px;
+    text-align: left;
+    cursor: pointer;
+}
+
+.format-menu button:hover,
+.format-menu button:focus-visible {
+    background: #f0f2ff;
+}
+
+.format-menu button.selected {
+    color: #5365d8;
+    background: #eef0ff;
+    font-weight: 750;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* =========================================
+   V2 KEYPAD LAYOUT
+
+   Laptop:
+   Scientific keypad = 6 columns
+   Number keypad     = 6 columns
+   Combined          = 12 columns
+
+   Phone:
+   Scientific keypad = 6 columns x 4 rows
+   Number keypad     = 6 columns x 4 rows
+   Combined          = 6 columns x 8 rows
+   ========================================= */
+
+.keypad {
+    flex: 1;
+    min-height: 0;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 12px;
+    align-items: stretch;
+}
+
+.scientific-keys,
+.number-keys {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    grid-template-rows: repeat(4, minmax(0, 1fr));
+    gap: 7px;
+    align-content: stretch;
+    min-height: 0;
+    min-width: 0;
+}
+
+.category-panel:not([hidden]) {
+    display: grid;
+    grid-row: 2 / span 3;
+}
+
+.category-panel {
+    grid-column: 1 / -1;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    grid-template-rows: repeat(3, minmax(0, 1fr));
+    gap: 7px;
+    align-content: stretch;
+    min-height: 0;
+    min-width: 0;
+}
+
+.category-panel[hidden] {
+    display: none;
+}
+
+/* =========================================
+   KEYPAD BUTTONS
+   ========================================= */
+
+.key {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    min-width: 0;
+    min-height: 0;
+    padding: 5px 3px;
+    color: #252b3b;
+    background: #f1f3f8;
+    border: 1px solid #eaecf2;
+    border-radius: 9px;
+    font-size: 14px;
+    font-weight: 650;
+    cursor: pointer;
+    transition: background 0.12s, transform 0.12s;
+    touch-action: manipulation;
+}
+
+.key:hover {
+    background: #e7eaff;
+}
+
+.key:active {
+    transform: scale(0.96);
+}
+
+/* Scientific functions */
+
+.key.function {
+    color: #5365c9;
+    background: #eef0ff;
+    border-color: #e7eaff;
+    font-size: 12px;
+}
+
+.key.function:hover {
+    background: #e3e7ff;
+}
+
+/* Operators */
+
+.key.operator {
+    color: #5365d8;
+    background: #e9ecff;
+    font-size: 19px;
+}
+
+/* Delete and clear */
+
+.key.utility {
+    color: #a34c42;
+    background: #fff0ed;
+}
+
+.key.utility:hover {
+    background: #ffe5e0;
+}
+
+/* Equals */
+
+.key.equals {
+    color: #fff;
+    background: #5365d8;
+    border-color: #5365d8;
+    font-size: 20px;
+}
+
+.key.equals:hover {
+    background: #4052c4;
+}
+
+/* =========================================
+   CATEGORY BUTTONS
+   ========================================= */
+
+.category-key {
+    min-height: 0;
+    padding: 5px 3px;
+    color: #687083;
+    background: #f5f6fa;
+    border: 1px solid #e7e9f0;
+    border-radius: 9px;
+    font-size: 14px;
+    font-weight: 650;
+    letter-spacing: 0;
+}
+
+.category-key:hover {
+    color: #5365d8;
+    background: #eef0ff;
+    border-color: #dfe3ff;
+}
+
+/* JavaScript should add/remove .active on selected category */
+
+.category-key.active {
+    color: #fff;
+    background: #5365d8;
+    border-color: #5365d8;
+}
+
+.category-key.active:hover {
+    background: #4052c4;
+}
+
+/* =========================================
+   SHIFT CORNER LABELS
+   ========================================= */
+
+.key.function {
+    overflow: hidden;
+}
+
+.key-main {
+    display: inline-block;
+    transition: opacity 0.15s, color 0.15s;
+}
+
+.key-secondary {
+    position: absolute;
+    top: 3px;
+    right: 5px;
+    color: #d6a51c;
+    font-size: 9px;
+    font-weight: 800;
+    line-height: 1;
+    opacity: 0.85;
+    pointer-events: none;
+    transition: opacity 0.15s;
+}
+
+/* SHIFT active: show secondary function clearly */
+
+.calculator:has(#shift-toggle[aria-pressed="true"]) .key-secondary {
+    opacity: 1;
+    color: #c08b00;
+    font-size: 10px;
+}
+
+.calculator:has(#shift-toggle[aria-pressed="true"]) .key-main {
+    opacity: 0.3;
+}
+
+/* Category keys should not be affected by SHIFT styling */
+
+.category-key .key-main {
+    opacity: 1 !important;
+}
+
+/* =========================================
+   FOOTER
+   ========================================= */
+
+.keyboard-hint {
+    margin: 12px 0 0;
+    color: #9298a7;
+    font-size: 11px;
+    text-align: center;
+    flex: none;
+}
+
+.calculator-footer {
+    margin: 9px 0 0;
+    color: #b0b5c2;
+    font-size: 10px;
+    text-align: center;
+    flex: none;
+}
+
+/* =========================================
+   TABLET
+   Stack the two keypads
+   ========================================= */
+
+@media (min-width: 481px) and (max-width: 900px) {
+    .page {
+        padding: 20px 14px;
+    }
+
+    .calculator {
+        padding: 22px;
+    }
+
+    .keypad {
+        grid-template-columns: minmax(0, 1fr);
+        grid-template-rows: repeat(2, minmax(0, 1fr));
+        gap: 7px;
+    }
+
+    .scientific-keys,
+    .number-keys {
+        grid-template-columns: repeat(6, minmax(0, 1fr));
+        grid-template-rows: repeat(4, minmax(0, 1fr));
+    }
+
+    .category-panel {
+        grid-template-rows: repeat(3, minmax(0, 1fr));
+    }
+}
+
+/* =========================================
+   PHONE PORTRAIT
+
+   Scientific: 6 columns x 4 rows
+   Number:     6 columns x 4 rows
+   Total:      6 columns x 8 rows
+   ========================================= */
+
+@media (max-width: 480px) {
+    .topbar {
+        min-height: 44px;
+        padding: 0 15px;
+    }
+
+    .page {
+        padding: 5px 6px;
+    }
+
+    .calculator {
+        padding: clamp(6px, 1.4dvh, 12px) clamp(6px, 2vw, 12px);
+        border-radius: 14px;
+    }
+
+    .calculator-heading {
+        flex: none;
+        margin-bottom: clamp(4px, 1dvh, 8px);
+        gap: 8px;
+    }
+
+    .eyebrow-row,
+    .subtitle,
+    .editor-hint,
+    .keyboard-hint,
+    .calculator-footer {
+        display: none;
+    }
+
+    h1 {
+        font-size: clamp(17px, 4vw, 21px);
+    }
+
+    .expression-section {
+        flex: none;
+        margin-bottom: 4px;
+    }
+
+    .calculator-controls {
+        gap: 4px;
+    }
+
+    .small-button {
+        min-width: 40px;
+        padding: 6px 5px;
+        font-size: 10px;
+    }
+
+    .angle-controls {
+        gap: 4px;
+    }
+
+    .expression-editor {
+        height: clamp(54px, 9dvh, 76px);
+        min-height: 54px;
+        max-height: 76px;
+        padding: 8px;
+        font-size: clamp(18px, 4.5vw, 22px);
+    }
+
+    .answer-panel {
+        flex: none;
+        height: clamp(48px, 8dvh, 64px);
+        min-height: 0;
+        margin: 4px 0;
+        padding: 5px 8px;
+    }
+
+    .answer-display {
+        margin-top: 3px;
+        font-size: clamp(17px, 4vw, 24px);
+    }
+
+    .calculator-message {
+        min-height: 0;
+        margin: 2px 0 0;
+    }
+
+    .keypad {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+        grid-template-rows: repeat(2, minmax(0, 1fr));
+        gap: clamp(3px, 0.8dvh, 6px);
+    }
+
+    .scientific-keys,
+    .number-keys {
+        display: grid;
+        grid-template-columns: repeat(6, minmax(0, 1fr));
+        grid-template-rows: repeat(4, minmax(0, 1fr));
+        gap: clamp(2px, 0.7dvh, 5px);
+        width: 100%;
+    }
+
+    .key {
+        min-height: 0;
+        padding: 2px 1px;
+        font-size: clamp(9px, 2.7vw, 13px);
+        border-radius: 8px;
+    }
+
+    .key.function {
+        font-size: clamp(8px, 2.2vw, 11px);
+    }
+
+    .category-key {
+        min-height: 0;
+        font-size: clamp(9px, 2.7vw, 13px);
+    }
+
+    .key-secondary {
+        top: 2px;
+        right: 2px;
+        font-size: clamp(6px, 1.7vw, 8px);
+    }
+}
+
+/* =========================================
+   VERY NARROW PHONES
+   ========================================= */
+
+@media (max-width: 350px) {
+    .calculator {
+        padding: 5px 6px;
+    }
+
+    .scientific-keys,
+    .number-keys {
+        gap: 4px;
+    }
+
+    .small-button {
+        min-width: 36px;
+        font-size: 9px;
+    }
+
+    h1 {
+        font-size: 17px;
+    }
+}
+
+/* =========================================
+   PHONE LANDSCAPE
+   ========================================= */
+
+@media (max-width: 900px) and (orientation: landscape) {
+    .topbar {
+        display: none;
+    }
+
+    .page {
+        padding: 2px 6px;
+    }
+
+    .calculator {
+        padding: 3px 8px;
+    }
+
+    .calculator-heading {
+        flex: none;
+        justify-content: flex-end;
+        margin-bottom: 2px;
+    }
+
+    .heading-info,
+    .section-label-row {
+        display: none;
+    }
+
+    .calculator-controls {
+        flex-direction: row;
+        align-items: center;
+    }
+
+    h1 {
+        display: none;
+    }
+
+    .expression-editor {
+        height: 34px;
+        min-height: 34px;
+        max-height: 34px;
+        padding: 3px 8px;
+        font-size: 17px;
+    }
+
+    .answer-panel {
+        height: 36px;
+        min-height: 0;
+        margin: 2px 0;
+        padding: 2px 8px;
+    }
+
+    .answer-display {
+        margin-top: 0;
+        font-size: 16px;
+    }
+
+    .keypad {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+        grid-template-rows: repeat(2, minmax(0, 1fr));
+        gap: 3px;
+    }
+
+    .scientific-keys,
+    .number-keys {
+        grid-template-columns: repeat(6, minmax(0, 1fr));
+        grid-template-rows: repeat(4, minmax(0, 1fr));
+        gap: 2px;
+    }
+
+    .key {
+        min-height: 0;
+        padding: 1px;
+        font-size: 9px;
+    }
+
+    .key.function {
+        font-size: 8px;
+    }
+
+    .category-key {
+        min-height: 0;
+        font-size: 8px;
+    }
+
+    .small-button {
+        min-width: 36px;
+        padding: 3px 5px;
+    }
+
+    .expression-section {
+        flex: none;
+        margin-bottom: 2px;
+    }
+
+    .editor-hint,
+    .keyboard-hint,
+    .calculator-footer {
+        display: none;
+    }
+}

@@ -1,0 +1,1495 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Math Solver | v2</title>
+
+        <link
+            rel="stylesheet"
+            href="{{ url_for('static', filename='style.css') }}"
+        />
+    </head>
+
+    <body>
+        <header class="topbar">
+            <a class="brand" href="/">Math Solver</a>
+            <span class="current-section">Scientific Calculator</span>
+        </header>
+
+        <main class="page">
+            <section class="calculator">
+                <div class="calculator-heading">
+                    <div class="heading-info">
+                        <div class="eyebrow-row">
+                            <p class="eyebrow">MATH SOLVER</p>
+                            <span class="version-label">v2.0</span>
+                        </div>
+
+                        <h1>Scientific Calculator</h1>
+                        <p class="subtitle">
+                            Calculate, explore and solve mathematics.
+                        </p>
+                    </div>
+
+                    <div class="calculator-controls">
+                        <button
+                            id="shift-toggle"
+                            class="small-button"
+                            type="button"
+                            aria-pressed="false"
+                        >
+                            SHIFT
+                        </button>
+
+                        <div class="angle-controls">
+                            <button
+                                id="deg-toggle"
+                                class="small-button active"
+                                type="button"
+                                aria-pressed="true"
+                            >
+                                DEG
+                            </button>
+
+                            <button
+                                id="rad-toggle"
+                                class="small-button"
+                                type="button"
+                                aria-pressed="false"
+                            >
+                                RAD
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- EXPRESSION EDITOR -->
+                <section class="expression-section">
+                    <div class="section-label-row">
+                        <label class="input-label" for="expression-editor">
+                            Expression
+                        </label>
+
+                        <button
+                            id="expression-clear"
+                            class="text-button"
+                            type="button"
+                        >
+                            Clear
+                        </button>
+                    </div>
+
+                    <div
+                        id="expression-editor"
+                        class="expression-editor"
+                        role="textbox"
+                        aria-label="Mathematical expression editor"
+                        aria-multiline="true"
+                        tabindex="0"
+                    >
+                        <span class="editor-placeholder">
+                            Enter a mathematical expression...
+                        </span>
+                    </div>
+
+                    <p class="editor-hint">
+                        Select a mathematical slot to enter a value.
+                    </p>
+                </section>
+
+                <!-- ANSWER -->
+                <section class="answer-panel">
+                    <div class="answer-top">
+                        <span class="answer-title">Answer</span>
+
+                        <div class="format-control">
+                            <button
+                                id="format-toggle"
+                                type="button"
+                                aria-expanded="false"
+                                aria-controls="format-menu"
+                            >
+                                <span id="format-label">Fraction</span>
+                                <span class="format-arrow" aria-hidden="true"
+                                    >⌄</span
+                                >
+                            </button>
+
+                            <div
+                                id="format-menu"
+                                class="format-menu hidden"
+                                role="menu"
+                            >
+                                <button
+                                    type="button"
+                                    data-format="mixed"
+                                    role="menuitem"
+                                >
+                                    Mixed fraction
+                                </button>
+
+                                <button
+                                    type="button"
+                                    data-format="fraction"
+                                    role="menuitem"
+                                    class="selected"
+                                >
+                                    Fraction
+                                </button>
+
+                                <button
+                                    type="button"
+                                    data-format="decimal"
+                                    role="menuitem"
+                                >
+                                    Decimal
+                                </button>
+
+                                <button
+                                    type="button"
+                                    data-format="remainder"
+                                    role="menuitem"
+                                >
+                                    Remainder
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="answer" class="answer-display" aria-live="polite">
+                        0
+                    </div>
+
+                    <p
+                        id="message"
+                        class="calculator-message"
+                        role="status"
+                    ></p>
+                </section>
+
+                <!-- KEYPADS -->
+                <div class="keypad">
+                    <!-- SCIENTIFIC KEYPAD -->
+                    <section
+                        class="scientific-keys"
+                        aria-label="Scientific keypad"
+                    >
+                        <!-- CATEGORY BUTTONS -->
+                        <button
+                            class="key category-key"
+                            type="button"
+                            data-category="STAT"
+                        >
+                            STAT
+                        </button>
+                        <button
+                            class="key category-key"
+                            type="button"
+                            data-category="CALCULUS"
+                        >
+                            CALCULUS
+                        </button>
+                        <button
+                            class="key category-key"
+                            type="button"
+                            data-category="TRI-HYP"
+                        >
+                            TRI/HYP
+                        </button>
+                        <button
+                            class="key category-key"
+                            type="button"
+                            data-category="CMPLX"
+                        >
+                            CMPLX
+                        </button>
+                        <button
+                            class="key category-key"
+                            type="button"
+                            data-category="VEC-MAT"
+                        >
+                            VEC/MAT
+                        </button>
+                        <button
+                            class="key category-key"
+                            type="button"
+                            data-category="BASE-N"
+                        >
+                            BASE-N
+                        </button>
+
+                        <!--STAT keypad-->
+                        <div
+                            class="stat-key category-panel"
+                            data-category="STAT"
+                            hidden
+                        >
+                            <button
+                                class="key function"
+                                type="button"
+                                data-template="n("
+                            >
+                                <span class="key-main">n</span>
+                            </button>
+
+                            <button
+                                class="key function"
+                                type="button"
+                                data-template=""
+                            >
+                                <span class="key-main">Σx</span>
+                            </button>
+
+                            <button
+                                class="key function"
+                                type="button"
+                                data-template=""
+                            >
+                                <span class="key-main">Σx²</span>
+                            </button>
+
+                            <button
+                                class="key function"
+                                type="button"
+                                data-template="mean("
+                            >
+                                <span class="key-main">mean</span>
+                            </button>
+
+                            <button
+                                class="key function"
+                                type="button"
+                                data-template="median("
+                            >
+                                <span class="key-main">median</span>
+                            </button>
+
+                            <button
+                                class="key function"
+                                type="button"
+                                data-template="mode("
+                            >
+                                <span class="key-main">mode</span>
+                            </button>
+
+                            <button
+                                class="key function"
+                                type="button"
+                                data-template="range("
+                            >
+                                <span class="key-main">range</span>
+                            </button>
+
+                            <button
+                                class="key function"
+                                type="button"
+                                data-template="std("
+                            >
+                                <span class="key-main">s</span>
+                            </button>
+
+                            <button
+                                class="key function"
+                                type="button"
+                                data-template=""
+                            >
+                                <span class="key-main">σ</span>
+                            </button>
+
+                            <button
+                                class="key function"
+                                type="button"
+                                data-template=""
+                            >
+                                <span class="key-main">s²</span>
+                            </button>
+
+                            <button
+                                class="key function"
+                                type="button"
+                                data-template=""
+                            >
+                                <span class="key-main">σ²</span>
+                            </button>
+
+                            <button
+                                class="key function"
+                                type="button"
+                                data-template=""
+                            >
+                                <span class="key-main">IQR</span>
+                            </button>
+
+                            <button
+                                class="key function"
+                                type="button"
+                                data-template=""
+                            >
+                                <span class="key-main">Q1</span>
+                            </button>
+
+                            <button
+                                class="key function"
+                                type="button"
+                                data-template=""
+                            >
+                                <span class="key-main">Q3</span>
+                            </button>
+
+                            <button
+                                class="key function"
+                                type="button"
+                                data-template=""
+                            >
+                                <span class="key-main">n!</span>
+                            </button>
+
+                            <button
+                                class="key function"
+                                type="button"
+                                data-template=""
+                            >
+                                <span class="key-main">Rand</span>
+                            </button>
+
+                            <button
+                                class="key function"
+                                type="button"
+                                data-template="min("
+                            >
+                                <span class="key-main">min</span>
+                            </button>
+
+                            <button
+                                class="key function"
+                                type="button"
+                                data-template="max("
+                            >
+                                <span class="key-main">max</span>
+                            </button>
+                        </div>
+
+                        <!--CALCULUS keypad-->
+                        <div
+                            class="calc-key category-panel"
+                            data-category="CALCULUS"
+                            hidden
+                        >
+                            <button
+                                class="key function"
+                                type="button"
+                                data-template=""
+                            >
+                                <span class="key-main">d/dx</span>
+                            </button>
+
+                            <button
+                                class="key function"
+                                type="button"
+                                data-template=""
+                            >
+                                <span class="key-main">d²/dx²</span>
+                            </button>
+
+                            <button
+                                class="key function"
+                                type="button"
+                                data-template=""
+                            >
+                                <span class="key-main">∫(a,b)</span>
+                            </button>
+
+                            <button
+                                class="key function"
+                                type="button"
+                                data-template=""
+                            >
+                                <span class="key-main">Σ</span>
+                            </button>
+
+                            <button
+                                class="key function"
+                                type="button"
+                                data-template=""
+                            >
+                                <span class="key-main">Π</span>
+                            </button>
+
+                            <button
+                                class="key function"
+                                type="button"
+                                data-template=""
+                            >
+                                <span class="key-main">Table</span>
+                            </button>
+
+                            <button
+                                class="key function"
+                                type="button"
+                                data-template="f(="
+                            >
+                                <span class="key-main">f(x)</span>
+                            </button>
+
+                            <button
+                                class="key function"
+                                type="button"
+                                data-template="f'(="
+                            >
+                                <span class="key-main">Y-Intercept</span>
+                            </button>
+
+                            <button
+                                class="key function"
+                                type="button"
+                                data-template=""
+                            >
+                                <span class="key-main">Root</span>
+                            </button>
+
+                            <button
+                                class="key function"
+                                type="button"
+                                data-template=""
+                            >
+                                <span class="key-main"
+                                    >Tangent Slope / Line</span
+                                >
+                            </button>
+
+                            <button
+                                class="key function"
+                                type="button"
+                                data-template=""
+                            >
+                                <span class="key-main"
+                                    >Average Value of a Function</span
+                                >
+                            </button>
+
+                            <button
+                                class="key function"
+                                type="button"
+                                data-template=""
+                            >
+                                <span class="key-main">Arc Length</span>
+                            </button>
+
+                            <button
+                                class="key function"
+                                type="button"
+                                data-template=""
+                            >
+                                <span class="key-main">Intersection</span>
+                            </button>
+
+                            <button
+                                class="key function"
+                                type="button"
+                                data-template=""
+                            >
+                                <span class="key-main">Inflection Point</span>
+                            </button>
+
+                            <button
+                                class="key function"
+                                type="button"
+                                data-template=""
+                            >
+                                <span class="key-main">Limit Estimation</span>
+                            </button>
+
+                            <button
+                                class="key function"
+                                type="button"
+                                data-template=""
+                            >
+                                <span class="key-main">Recursive Sequence</span>
+                            </button>
+
+                            <button
+                                class="key function"
+                                type="button"
+                                data-template=""
+                            >
+                                <span class="key-main">Local Max</span>
+                            </button>
+
+                            <button
+                                class="key function"
+                                type="button"
+                                data-template=""
+                            >
+                                <span class="key-main">Local Min</span>
+                            </button>
+                        </div>
+
+                        <!--TRI/HYP keypad-->
+                        <div
+                            class="tri-hyp-key category-panel"
+                            data-category="TRI-HYP"
+                            hidden
+                        >
+                            <button
+                                class="key function"
+                                type="button"
+                                data-template=""
+                            >
+                                <span class="key-main">Sin</span>
+                            </button>
+
+                            <button
+                                class="key function"
+                                type="button"
+                                data-template=""
+                            >
+                                <span class="key-main">Cos</span>
+                            </button>
+
+                            <button
+                                class="key function"
+                                type="button"
+                                data-template=""
+                            >
+                                <span class="key-main">Tan</span>
+                            </button>
+
+                            <button
+                                class="key function"
+                                type="button"
+                                data-template=""
+                            >
+                                <span class="key-main">Sin^-1</span>
+                            </button>
+
+                            <button
+                                class="key function"
+                                type="button"
+                                data-template=""
+                            >
+                                <span class="key-main">Cos^-1</span>
+                            </button>
+
+                            <button
+                                class="key function"
+                                type="button"
+                                data-template=""
+                            >
+                                <span class="key-main">Tan^-1</span>
+                            </button>
+
+                            <button
+                                class="key function"
+                                type="button"
+                                data-template=""
+                            >
+                                <span class="key-main">Sec</span>
+                            </button>
+
+                            <button
+                                class="key function"
+                                type="button"
+                                data-template=""
+                            >
+                                <span class="key-main">Csc</span>
+                            </button>
+
+                            <button
+                                class="key function"
+                                type="button"
+                                data-template=""
+                            >
+                                <span class="key-main">Cot</span>
+                            </button>
+
+                            <button
+                                class="key function"
+                                type="button"
+                                data-template=""
+                            >
+                                <span class="key-main">Sec^-1</span>
+                            </button>
+
+                            <button
+                                class="key function"
+                                type="button"
+                                data-template=""
+                            >
+                                <span class="key-main">Csc^-1</span>
+                            </button>
+
+                            <button
+                                class="key function"
+                                type="button"
+                                data-template=""
+                            >
+                                <span class="key-main">Cot^-1</span>
+                            </button>
+
+                            <button
+                                class="key function"
+                                type="button"
+                                data-template=""
+                            >
+                                <span class="key-main">Sinh</span>
+                            </button>
+
+                            <button
+                                class="key function"
+                                type="button"
+                                data-template=""
+                            >
+                                <span class="key-main">Cosh</span>
+                            </button>
+
+                            <button
+                                class="key function"
+                                type="button"
+                                data-template=""
+                            >
+                                <span class="key-main">Tanh</span>
+                            </button>
+
+                            <button
+                                class="key function"
+                                type="button"
+                                data-template=""
+                            >
+                                <span class="key-main">sinh^-1</span>
+                            </button>
+
+                            <button
+                                class="key function"
+                                type="button"
+                                data-template=""
+                            >
+                                <span class="key-main">cosh^-1</span>
+                            </button>
+
+                            <button
+                                class="key function"
+                                type="button"
+                                data-template=""
+                            >
+                                <span class="key-main">tanh^-1</span>
+                            </button>
+                        </div>
+
+                        <!--CMPLX keypad-->
+                        <div
+                            class="cmplx-key category-panel"
+                            data-category="CMPLX"
+                            hidden
+                        >
+                            <button
+                                class="key function"
+                                type="button"
+                                data-template=""
+                            >
+                                <span class="key-main"></span>
+                            </button>
+
+                            <button
+                                class="key function"
+                                type="button"
+                                data-template=""
+                            >
+                                <span class="key-main"></span>
+                            </button>
+
+                            <button
+                                class="key function"
+                                type="button"
+                                data-template=""
+                            >
+                                <span class="key-main"></span>
+                            </button>
+
+                            <button
+                                class="key function"
+                                type="button"
+                                data-template=""
+                            >
+                                <span class="key-main"></span>
+                            </button>
+
+                            <button
+                                class="key function"
+                                type="button"
+                                data-template=""
+                            >
+                                <span class="key-main"></span>
+                            </button>
+
+                            <button
+                                class="key function"
+                                type="button"
+                                data-template=""
+                            >
+                                <span class="key-main"></span>
+                            </button>
+
+                            <button
+                                class="key function"
+                                type="button"
+                                data-template=""
+                            >
+                                <span class="key-main"></span>
+                            </button>
+
+                            <button
+                                class="key function"
+                                type="button"
+                                data-template=""
+                            >
+                                <span class="key-main"></span>
+                            </button>
+
+                            <button
+                                class="key function"
+                                type="button"
+                                data-template=""
+                            >
+                                <span class="key-main"></span>
+                            </button>
+
+                            <button
+                                class="key function"
+                                type="button"
+                                data-template=""
+                            >
+                                <span class="key-main"></span>
+                            </button>
+
+                            <button
+                                class="key function"
+                                type="button"
+                                data-template=""
+                            >
+                                <span class="key-main"></span>
+                            </button>
+
+                            <button
+                                class="key function"
+                                type="button"
+                                data-template=""
+                            >
+                                <span class="key-main"></span>
+                            </button>
+
+                            <button
+                                class="key function"
+                                type="button"
+                                data-template=""
+                            >
+                                <span class="key-main"></span>
+                            </button>
+
+                            <button
+                                class="key function"
+                                type="button"
+                                data-template=""
+                            >
+                                <span class="key-main"></span>
+                            </button>
+
+                            <button
+                                class="key function"
+                                type="button"
+                                data-template=""
+                            >
+                                <span class="key-main"></span>
+                            </button>
+
+                            <button
+                                class="key function"
+                                type="button"
+                                data-template=""
+                            >
+                                <span class="key-main"></span>
+                            </button>
+
+                            <button
+                                class="key function"
+                                type="button"
+                                data-template=""
+                            >
+                                <span class="key-main"></span>
+                            </button>
+
+                            <button
+                                class="key function"
+                                type="button"
+                                data-template=""
+                            >
+                                <span class="key-main"></span>
+                            </button>
+                        </div>
+
+                        <!--VEC/MAT keypad-->
+                        <div
+                            class="vec-mat-key category-panel"
+                            data-category="VEC-MAT"
+                            hidden
+                        >
+                            <button
+                                class="key function"
+                                type="button"
+                                data-template=""
+                            >
+                                <span class="key-main"></span>
+                            </button>
+
+                            <button
+                                class="key function"
+                                type="button"
+                                data-template=""
+                            >
+                                <span class="key-main"></span>
+                            </button>
+
+                            <button
+                                class="key function"
+                                type="button"
+                                data-template=""
+                            >
+                                <span class="key-main"></span>
+                            </button>
+
+                            <button
+                                class="key function"
+                                type="button"
+                                data-template=""
+                            >
+                                <span class="key-main"></span>
+                            </button>
+
+                            <button
+                                class="key function"
+                                type="button"
+                                data-template=""
+                            >
+                                <span class="key-main"></span>
+                            </button>
+
+                            <button
+                                class="key function"
+                                type="button"
+                                data-template=""
+                            >
+                                <span class="key-main"></span>
+                            </button>
+
+                            <button
+                                class="key function"
+                                type="button"
+                                data-template=""
+                            >
+                                <span class="key-main"></span>
+                            </button>
+
+                            <button
+                                class="key function"
+                                type="button"
+                                data-template=""
+                            >
+                                <span class="key-main"></span>
+                            </button>
+
+                            <button
+                                class="key function"
+                                type="button"
+                                data-template=""
+                            >
+                                <span class="key-main"></span>
+                            </button>
+
+                            <button
+                                class="key function"
+                                type="button"
+                                data-template=""
+                            >
+                                <span class="key-main"></span>
+                            </button>
+
+                            <button
+                                class="key function"
+                                type="button"
+                                data-template=""
+                            >
+                                <span class="key-main"></span>
+                            </button>
+
+                            <button
+                                class="key function"
+                                type="button"
+                                data-template=""
+                            >
+                                <span class="key-main"></span>
+                            </button>
+
+                            <button
+                                class="key function"
+                                type="button"
+                                data-template=""
+                            >
+                                <span class="key-main"></span>
+                            </button>
+
+                            <button
+                                class="key function"
+                                type="button"
+                                data-template=""
+                            >
+                                <span class="key-main"></span>
+                            </button>
+
+                            <button
+                                class="key function"
+                                type="button"
+                                data-template=""
+                            >
+                                <span class="key-main"></span>
+                            </button>
+
+                            <button
+                                class="key function"
+                                type="button"
+                                data-template=""
+                            >
+                                <span class="key-main"></span>
+                            </button>
+
+                            <button
+                                class="key function"
+                                type="button"
+                                data-template=""
+                            >
+                                <span class="key-main"></span>
+                            </button>
+
+                            <button
+                                class="key function"
+                                type="button"
+                                data-template=""
+                            >
+                                <span class="key-main"></span>
+                            </button>
+                        </div>
+
+                        <!--BASE-N keypad-->
+                        <div
+                            class="base-n-key category-panel"
+                            data-category="BASE-N"
+                            hidden
+                        >
+                            <button
+                                class="key function"
+                                type="button"
+                                data-template=""
+                            >
+                                <span class="key-main"></span>
+                            </button>
+
+                            <button
+                                class="key function"
+                                type="button"
+                                data-template=""
+                            >
+                                <span class="key-main"></span>
+                            </button>
+
+                            <button
+                                class="key function"
+                                type="button"
+                                data-template=""
+                            >
+                                <span class="key-main"></span>
+                            </button>
+
+                            <button
+                                class="key function"
+                                type="button"
+                                data-template=""
+                            >
+                                <span class="key-main"></span>
+                            </button>
+
+                            <button
+                                class="key function"
+                                type="button"
+                                data-template=""
+                            >
+                                <span class="key-main"></span>
+                            </button>
+
+                            <button
+                                class="key function"
+                                type="button"
+                                data-template=""
+                            >
+                                <span class="key-main"></span>
+                            </button>
+
+                            <button
+                                class="key function"
+                                type="button"
+                                data-template=""
+                            >
+                                <span class="key-main"></span>
+                            </button>
+
+                            <button
+                                class="key function"
+                                type="button"
+                                data-template=""
+                            >
+                                <span class="key-main"></span>
+                            </button>
+
+                            <button
+                                class="key function"
+                                type="button"
+                                data-template=""
+                            >
+                                <span class="key-main"></span>
+                            </button>
+
+                            <button
+                                class="key function"
+                                type="button"
+                                data-template=""
+                            >
+                                <span class="key-main"></span>
+                            </button>
+
+                            <button
+                                class="key function"
+                                type="button"
+                                data-template=""
+                            >
+                                <span class="key-main"></span>
+                            </button>
+
+                            <button
+                                class="key function"
+                                type="button"
+                                data-template=""
+                            >
+                                <span class="key-main"></span>
+                            </button>
+
+                            <button
+                                class="key function"
+                                type="button"
+                                data-template=""
+                            >
+                                <span class="key-main"></span>
+                            </button>
+
+                            <button
+                                class="key function"
+                                type="button"
+                                data-template=""
+                            >
+                                <span class="key-main"></span>
+                            </button>
+
+                            <button
+                                class="key function"
+                                type="button"
+                                data-template=""
+                            >
+                                <span class="key-main"></span>
+                            </button>
+
+                            <button
+                                class="key function"
+                                type="button"
+                                data-template=""
+                            >
+                                <span class="key-main"></span>
+                            </button>
+
+                            <button
+                                class="key function"
+                                type="button"
+                                data-template=""
+                            >
+                                <span class="key-main"></span>
+                            </button>
+
+                            <button
+                                class="key function"
+                                type="button"
+                                data-template=""
+                            >
+                                <span class="key-main"></span>
+                            </button>
+                        </div>
+
+                        <!-- ROW 2 -->
+                        <button
+                            class="key function"
+                            type="button"
+                            data-template="fraction"
+                            data-shift-template="mixed-fraction"
+                        >
+                            <span class="key-main"
+                                ><sup>a</sup>⁄<sub>b</sub></span
+                            >
+                            <span class="key-secondary"
+                                >a <sup>b</sup>⁄<sub>c</sub></span
+                            >
+                        </button>
+
+                        <button
+                            class="key function"
+                            type="button"
+                            data-template="square-root"
+                            data-shift-template="cube-root"
+                        >
+                            <span class="key-main">√</span>
+                            <span class="key-secondary">∛</span>
+                        </button>
+
+                        <button
+                            class="key function"
+                            type="button"
+                            data-template="square"
+                            data-shift-template="cube"
+                        >
+                            <span class="key-main">x²</span>
+                            <span class="key-secondary">x³</span>
+                        </button>
+
+                        <button
+                            class="key function"
+                            type="button"
+                            data-template="power"
+                            data-shift-template="nth-root"
+                        >
+                            <span class="key-main">xʸ</span>
+                            <span class="key-secondary">ʸ√x</span>
+                        </button>
+
+                        <button
+                            class="key function"
+                            type="button"
+                            data-template="log-base"
+                            data-shift-insert="10^"
+                        >
+                            <span class="key-main">logₐ(b)</span>
+                            <span class="key-secondary">10ˣ</span>
+                        </button>
+
+                        <button
+                            class="key function"
+                            type="button"
+                            data-insert="ln("
+                            data-shift-insert="e^"
+                        >
+                            <span class="key-main">ln</span>
+                            <span class="key-secondary">eˣ</span>
+                        </button>
+
+                        <!-- ROW 3 -->
+
+                        <button
+                            class="key function"
+                            type="button"
+                            data-insert="−"
+                            data-shift-insert="log("
+                        >
+                            <span class="key-main">(−)</span>
+                            <span class="key-secondary">log</span>
+                        </button>
+
+                        <button
+                            class="key function"
+                            type="button"
+                            data-insert="dms("
+                            data-shift-insert="log10("
+                        >
+                            <span class="key-main">° ′ ″</span>
+                            <span class="key-secondary">log₁₀</span>
+                        </button>
+
+                        <button
+                            class="key function"
+                            type="button"
+                            data-insert="1/("
+                            data-shift-insert="factorial("
+                        >
+                            <span class="key-main">x⁻¹</span>
+                            <span class="key-secondary">x!</span>
+                        </button>
+
+                        <button
+                            class="key function"
+                            type="button"
+                            data-insert="hcf("
+                        >
+                            <span class="key-main">HCF</span>
+                        </button>
+
+                        <button
+                            class="key function"
+                            type="button"
+                            data-insert="lcm("
+                        >
+                            <span class="key-main">LCM</span>
+                        </button>
+
+                        <button
+                            class="key function"
+                            type="button"
+                            data-insert="abs("
+                        >
+                            <span class="key-main">|x|</span>
+                        </button>
+
+                        <!-- ROW 4 -->
+
+                        <button
+                            class="key function"
+                            type="button"
+                            data-insert="×10^"
+                            data-shift-insert="×10^−"
+                        >
+                            <span class="key-main">ENG</span>
+                            <span class="key-secondary">←ENG</span>
+                        </button>
+
+                        <button
+                            class="key function"
+                            type="button"
+                            data-insert="mod("
+                        >
+                            <span class="key-main">mod</span>
+                        </button>
+
+                        <button
+                            class="key function"
+                            type="button"
+                            data-insert="("
+                            data-shift-template="floor"
+                        >
+                            <span class="key-main">(</span>
+                            <span class="key-secondary">⌊x⌋</span>
+                        </button>
+
+                        <button
+                            class="key function"
+                            type="button"
+                            data-insert=")"
+                            data-shift-template="ceil"
+                        >
+                            <span class="key-main">)</span>
+                            <span class="key-secondary">⌈x⌉</span>
+                        </button>
+
+                        <button
+                            class="key function"
+                            type="button"
+                            data-insert="π"
+                            data-shift-insert="τ"
+                        >
+                            <span class="key-main">π</span>
+                            <span class="key-secondary">τ</span>
+                        </button>
+
+                        <button
+                            class="key function"
+                            type="button"
+                            data-insert="e"
+                            data-shift-insert="φ"
+                        >
+                            <span class="key-main">e</span>
+                            <span class="key-secondary">φ</span>
+                        </button>
+                    </section>
+
+                    <!-- NUMBER KEYPAD -->
+                    <section class="number-keys" aria-label="Number keypad">
+                        <!-- ROW 1 -->
+                        <button class="key" type="button" data-insert="7">
+                            7
+                        </button>
+                        <button class="key" type="button" data-insert="8">
+                            8
+                        </button>
+                        <button class="key" type="button" data-insert="9">
+                            9
+                        </button>
+
+                        <button
+                            class="key utility"
+                            type="button"
+                            data-action="delete"
+                        >
+                            DEL
+                        </button>
+                        <button
+                            class="key utility"
+                            type="button"
+                            data-action="clear"
+                        >
+                            AC
+                        </button>
+                        <button
+                            class="key function"
+                            type="button"
+                            data-action="store"
+                        >
+                            STO
+                        </button>
+
+                        <!-- ROW 2 -->
+                        <button class="key" type="button" data-insert="4">
+                            4
+                        </button>
+                        <button class="key" type="button" data-insert="5">
+                            5
+                        </button>
+                        <button class="key" type="button" data-insert="6">
+                            6
+                        </button>
+
+                        <button
+                            class="key operator"
+                            type="button"
+                            data-insert="×"
+                            data-shift-insert="npr("
+                        >
+                            <span class="key-main">×</span>
+                            <span class="key-secondary">nPr</span>
+                        </button>
+
+                        <button
+                            class="key operator"
+                            type="button"
+                            data-insert="÷"
+                            data-shift-insert="ncr("
+                        >
+                            <span class="key-main">÷</span>
+                            <span class="key-secondary">nCr</span>
+                        </button>
+
+                        <button
+                            class="key function"
+                            type="button"
+                            data-action="memory-add"
+                            data-shift-action="memory-subtract"
+                        >
+                            <span class="key-main">M+</span>
+                            <span class="key-secondary">M−</span>
+                        </button>
+
+                        <!-- ROW 3 -->
+                        <button class="key" type="button" data-insert="1">
+                            1
+                        </button>
+                        <button class="key" type="button" data-insert="2">
+                            2
+                        </button>
+                        <button class="key" type="button" data-insert="3">
+                            3
+                        </button>
+
+                        <button
+                            class="key operator"
+                            type="button"
+                            data-insert="+"
+                        >
+                            +
+                        </button>
+                        <button
+                            class="key operator"
+                            type="button"
+                            data-insert="−"
+                        >
+                            −
+                        </button>
+
+                        <button
+                            class="key function"
+                            type="button"
+                            data-action="memory-recall"
+                            data-shift-action="memory-clear"
+                        >
+                            <span class="key-main">MR</span>
+                            <span class="key-secondary">MC</span>
+                        </button>
+
+                        <!-- ROW 4 -->
+                        <button
+                            class="key"
+                            type="button"
+                            data-insert="0"
+                            data-shift-insert="rnd("
+                        >
+                            <span class="key-main">0</span>
+                            <span class="key-secondary">rnd</span>
+                        </button>
+
+                        <button
+                            class="key"
+                            type="button"
+                            data-insert="."
+                            data-shift-insert=","
+                        >
+                            <span class="key-main">.</span>
+                            <span class="key-secondary">,</span>
+                        </button>
+
+                        <button
+                            class="key function"
+                            type="button"
+                            data-insert="×10^"
+                        >
+                            <span class="key-main">×10ˣ</span>
+                        </button>
+
+                        <button
+                            class="key function"
+                            type="button"
+                            data-action="answer"
+                            data-shift-insert="%"
+                        >
+                            <span class="key-main">Ans</span>
+                            <span class="key-secondary">%</span>
+                        </button>
+
+                        <button
+                            class="key equals"
+                            type="button"
+                            data-action="calculate"
+                        >
+                            =
+                        </button>
+
+                        <button
+                            class="key function"
+                            type="button"
+                            data-action="previous-answer"
+                        >
+                            <span class="key-main">PreAns</span>
+                        </button>
+                    </section>
+                </div>
+
+                <p class="keyboard-hint">
+                    Tip: You can also use your computer keyboard.
+                </p>
+
+                <p class="calculator-footer">
+                    Math Solver · Scientific Calculator v2.0
+                </p>
+            </section>
+        </main>
+
+        <script src="{{ url_for('static', filename='script.js') }}"></script>
+    </body>
+</html>
