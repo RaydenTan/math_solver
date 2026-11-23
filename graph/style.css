@@ -393,6 +393,18 @@ select,
     background: #f4fbfe;
 }
 
+.export-button {
+    border-color: #b9dbe9;
+    color: #fff;
+    background: var(--ocean);
+}
+
+.export-button:hover {
+    border-color: var(--ocean-deep);
+    color: #fff;
+    background: var(--ocean-deep);
+}
+
 .file-button {
     cursor: pointer;
 }
@@ -405,6 +417,7 @@ select,
 
 .editor-table {
     width: 100%;
+    min-width: 720px;
     border-collapse: collapse;
     table-layout: fixed;
     font-size: 11px;
@@ -429,12 +442,14 @@ select,
 }
 
 .editor-table th:first-child {
-    width: 39%;
+    width: 28%;
 }
 
 .editor-table th:nth-child(2),
-.editor-table th:nth-child(3) {
-    width: 26%;
+.editor-table th:nth-child(3),
+.editor-table th:nth-child(4),
+.editor-table th:nth-child(5) {
+    width: 15%;
 }
 
 .editor-table th:last-child {
@@ -714,6 +729,21 @@ select,
 
     .data-heading {
         align-items: stretch;
+    }
+
+    .editor-table {
+        min-width: 0;
+    }
+
+    .editor-table th,
+    .editor-table td {
+        padding: 6px 3px;
+    }
+
+    .editor-table input {
+        min-width: 0;
+        padding: 6px 3px;
+        font-size: 11px;
     }
 
     .sample-control {

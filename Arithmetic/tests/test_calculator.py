@@ -120,6 +120,9 @@ class CalculatorTests(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertIn(b"Graphs &amp; statistics", response.data)
         self.assertIn(b"Import CSV", response.data)
+        self.assertIn(b"Q-Q plot", response.data)
+        self.assertIn(b"Pareto chart", response.data)
+        self.assertIn(b"Save chart + stats + table as PNG", response.data)
         self.assertIn(b"Statistics", response.data)
         response.close()
 

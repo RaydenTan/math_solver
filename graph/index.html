@@ -7,7 +7,7 @@
             name="description"
             content="Create clear charts, edit data, and explore statistics with Math Solver++."
         />
-        <title>Graphs &amp; Statistics v1 | Math Solver++</title>
+        <title>Graphs &amp; Statistics v1.5 | Math Solver++</title>
         <link rel="icon" type="image/png" href="/icon.png" />
         <link rel="stylesheet" href="/graph/style.css" />
         <script src="/graph/script.js" defer></script>
@@ -17,7 +17,7 @@
             <a class="brand" href="/">
                 <img src="/icon.png" alt="" />
                 <span>math solver<span class="brand-plus">++</span></span>
-                <span class="version">v1</span>
+                <span class="version">v1.5</span>
             </a>
             <a class="home-link" href="/">Back to home <span aria-hidden="true">↗</span></a>
         </header>
@@ -25,7 +25,7 @@
         <main class="page-shell">
             <section class="page-heading">
                 <p class="eyebrow">MATH SOLVER++ TOOLKIT</p>
-                <h1>Graphs &amp; statistics <span class="version">v1</span></h1>
+                <h1>Graphs &amp; statistics <span class="version">v1.5</span></h1>
                 <p>
                     Enter or import data, choose a chart, and get a clear
                     statistical summary. Your data stays in this browser.
@@ -43,14 +43,23 @@
                             <label class="chart-type-control" for="chart-type">
                                 Chart type
                                 <select id="chart-type">
-                                    <option value="bar">Bar chart</option>
-                                    <option value="line">Line chart</option>
-                                    <option value="scatter">Scatter plot</option>
+                                    <option value="bar-h">Horizontal bar chart</option>
+                                    <option value="bar">Vertical bar chart</option>
                                     <option value="pie">Pie chart</option>
-                                    <option value="donut">Doughnut chart</option>
+                                    <option value="pareto">Pareto chart</option>
                                     <option value="histogram">Histogram</option>
-                                    <option value="dot">Dot plot</option>
                                     <option value="box">Box plot</option>
+                                    <option value="frequency">Frequency polygon</option>
+                                    <option value="ogive">Ogive</option>
+                                    <option value="density">Density plot</option>
+                                    <option value="scatter">Scatter plot</option>
+                                    <option value="line">Line graph</option>
+                                    <option value="bubble">Bubble chart</option>
+                                    <option value="stem">Stem-and-leaf plot</option>
+                                    <option value="dot">Dot plot</option>
+                                    <option value="qq">Q-Q plot</option>
+                                    <option value="error">Error bar chart</option>
+                                    <option value="donut">Doughnut chart</option>
                                     <option value="table">Data table</option>
                                 </select>
                             </label>
@@ -116,6 +125,9 @@
                             <label class="secondary-button file-button" for="csv-file">Import CSV</label>
                             <input id="csv-file" class="visually-hidden" type="file" accept=".csv,text/csv" />
                             <button id="export-csv" class="secondary-button" type="button">Export CSV</button>
+                            <button id="export-report" class="secondary-button export-button" type="button">
+                                Save chart + stats + table as PNG
+                            </button>
                         </div>
                         <p id="data-status" class="data-status" role="status" aria-live="polite"></p>
 
@@ -126,6 +138,8 @@
                                         <th scope="col">Label</th>
                                         <th scope="col">X value</th>
                                         <th scope="col">Y value</th>
+                                        <th scope="col">Error</th>
+                                        <th scope="col">Size</th>
                                         <th scope="col"><span class="visually-hidden">Remove row</span></th>
                                     </tr>
                                 </thead>
@@ -133,8 +147,8 @@
                             </table>
                         </div>
                         <p class="field-help">
-                            Use labels and Y values for most charts. Scatter plots use numeric X and Y values;
-                            histograms and box plots use Y values only.
+                            Use X and Y for scatter and bubble charts, an Error value for error bars,
+                            and a Size value for bubble charts. Other charts usually need only Y values.
                         </p>
                     </section>
                 </section>
@@ -163,7 +177,7 @@
             <a class="brand footer-brand" href="/">
                 <img src="/icon.png" alt="" />
                 <span>math solver<span class="brand-plus">++</span></span>
-                <span class="version">v1</span>
+                <span class="version">v1.5</span>
             </a>
             <p>Clear charts. Useful statistics. More ways to learn.</p>
         </footer>

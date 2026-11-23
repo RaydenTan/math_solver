@@ -29,6 +29,7 @@ const elements = {
     dataStatus: document.getElementById("data-status"),
     csvFile: document.getElementById("csv-file"),
     addRow: document.getElementById("add-row"),
+    exportReport: document.getElementById("export-report"),
     statsSummary: document.getElementById("stats-summary"),
     statsDescription: document.getElementById("stats-description"),
 };
@@ -44,12 +45,12 @@ const samples = {
         xLabel: "Month",
         yLabel: "Sales",
         rows: [
-            ["Jan", 1, 18],
-            ["Feb", 2, 25],
-            ["Mar", 3, 20],
-            ["Apr", 4, 32],
-            ["May", 5, 28],
-            ["Jun", 6, 40],
+            ["Jan", 1, 18, null, null],
+            ["Feb", 2, 25, null, null],
+            ["Mar", 3, 20, null, null],
+            ["Apr", 4, 32, null, null],
+            ["May", 5, 28, null, null],
+            ["Jun", 6, 40, null, null],
         ],
     },
     survey: {
@@ -58,10 +59,10 @@ const samples = {
         xLabel: "Fruit",
         yLabel: "Votes",
         rows: [
-            ["Mango", 1, 12],
-            ["Apple", 2, 9],
-            ["Orange", 3, 7],
-            ["Banana", 4, 5],
+            ["Mango", 1, 12, null, null],
+            ["Apple", 2, 9, null, null],
+            ["Orange", 3, 7, null, null],
+            ["Banana", 4, 5, null, null],
         ],
     },
     scores: {
@@ -70,18 +71,18 @@ const samples = {
         xLabel: "Test score",
         yLabel: "Students",
         rows: [
-            ["Student 1", 1, 62],
-            ["Student 2", 2, 74],
-            ["Student 3", 3, 81],
-            ["Student 4", 4, 88],
-            ["Student 5", 5, 74],
-            ["Student 6", 6, 93],
-            ["Student 7", 7, 68],
-            ["Student 8", 8, 81],
-            ["Student 9", 9, 77],
-            ["Student 10", 10, 96],
-            ["Student 11", 11, 85],
-            ["Student 12", 12, 72],
+            ["Student 1", 1, 62, null, null],
+            ["Student 2", 2, 74, null, null],
+            ["Student 3", 3, 81, null, null],
+            ["Student 4", 4, 88, null, null],
+            ["Student 5", 5, 74, null, null],
+            ["Student 6", 6, 93, null, null],
+            ["Student 7", 7, 68, null, null],
+            ["Student 8", 8, 81, null, null],
+            ["Student 9", 9, 77, null, null],
+            ["Student 10", 10, 96, null, null],
+            ["Student 11", 11, 85, null, null],
+            ["Student 12", 12, 72, null, null],
         ],
     },
     blank: {
@@ -90,9 +91,9 @@ const samples = {
         xLabel: "X value",
         yLabel: "Y value",
         rows: [
-            ["Item 1", null, null],
-            ["Item 2", null, null],
-            ["Item 3", null, null],
+            ["Item 1", null, null, null, null],
+            ["Item 2", null, null, null, null],
+            ["Item 3", null, null, null, null],
         ],
     },
 };
@@ -432,6 +433,79 @@ function drawBarChart() {
     addAxisTitles(plot, bounds, elements.xAxisLabel.value || "Category", elements.yAxisLabel.value || "Value");
 }
 
+function drawHorizontalBarChart() {
+    const entries = getYValues();
+    const bounds = { left: 180, right: 778, top: 55, bottom: 350 };
+    const plot = makeSvg("g");
+    elements.chart.append(plot);
+    addChartTitle();
+    const [min, max] = paddedDomain(entries.map((entry) => entry.value), true);
+    const ticks = numericTicks(min, max);
+    const x = createScale(min, max, bounds.left, bounds.right);
+    ticks.forEach((tick) => {
+        const position = x(tick);
+        plot.append(
+            makeSvg("line", {
+                x1: position,
+                y1: bounds.top,
+                x2: position,
+                y2: bounds.bottom,
+                class: "grid-line",
+            }),
+            makeSvg("text", {
+                x: position,
+                y: bounds.bottom + 20,
+                "text-anchor": "middle",
+            }, formatNumber(tick)),
+        );
+    });
+    const band = (bounds.bottom - bounds.top) / entries.length;
+    const zeroX = x(0);
+    entries.forEach((entry, index) => {
+        const valueX = x(entry.value);
+        const barHeight = Math.min(34, band * 0.68);
+        const mark = makeSvg("rect", {
+            x: Math.min(valueX, zeroX),
+            y: bounds.top + band * index + (band - barHeight) / 2,
+            width: Math.max(1, Math.abs(valueX - zeroX)),
+            height: barHeight,
+            rx: 4,
+            fill: palette[index % palette.length],
+        });
+        addTooltip(mark, `${entry.label}: ${formatNumber(entry.value)}`);
+        plot.append(
+            mark,
+            makeSvg("text", {
+                x: bounds.left - 10,
+                y: bounds.top + band * (index + 0.5) + 4,
+                "text-anchor": "end",
+            }, labelForAxis(entry.label)),
+        );
+    });
+    plot.append(
+        makeSvg("line", {
+            x1: bounds.left,
+            y1: bounds.bottom,
+            x2: bounds.right,
+            y2: bounds.bottom,
+            class: "axis-line",
+        }),
+        makeSvg("text", {
+            x: (bounds.left + bounds.right) / 2,
+            y: 425,
+            "text-anchor": "middle",
+            class: "axis-title",
+        }, elements.xAxisLabel.value || "Value"),
+        makeSvg("text", {
+            x: 25,
+            y: (bounds.top + bounds.bottom) / 2,
+            "text-anchor": "middle",
+            class: "axis-title",
+            transform: `rotate(-90 25 ${(bounds.top + bounds.bottom) / 2})`,
+        }, elements.yAxisLabel.value || "Category"),
+    );
+}
+
 function drawLineChart() {
     const entries = getYValues();
     const bounds = { left: 78, right: 778, top: 55, bottom: 333 };
@@ -514,6 +588,144 @@ function drawScatterChart() {
         plot.append(mark);
     });
     addAxisTitles(plot, bounds, elements.xAxisLabel.value || "X", elements.yAxisLabel.value || "Y");
+}
+
+function drawBubbleChart() {
+    const entries = rows
+        .map((row, index) => ({
+            label: getLabel(row, index),
+            x: row.x,
+            y: row.y,
+            size: row.size,
+        }))
+        .filter((entry) =>
+            Number.isFinite(entry.x) &&
+            Number.isFinite(entry.y) &&
+            Number.isFinite(entry.size),
+        );
+    if (entries.some((entry) => entry.size < 0)) {
+        setChartError("Bubble sizes must be zero or greater.");
+        showChartMessage("Use non-negative sizes for bubbles.");
+        return;
+    }
+
+    const bounds = { left: 78, right: 778, top: 55, bottom: 333 };
+    const plot = makeSvg("g");
+    elements.chart.append(plot);
+    addChartTitle();
+    const [xMin, xMax] = paddedDomain(entries.map((entry) => entry.x));
+    const [yMin, yMax] = paddedDomain(entries.map((entry) => entry.y));
+    const x = createScale(xMin, xMax, bounds.left, bounds.right);
+    const y = drawGrid(plot, yMin, yMax, bounds);
+    numericTicks(xMin, xMax).forEach((tick) => {
+        const position = x(tick);
+        plot.append(
+            makeSvg("line", {
+                x1: position,
+                y1: bounds.bottom,
+                x2: position,
+                y2: bounds.bottom + 5,
+                class: "axis-line",
+            }),
+            makeSvg("text", {
+                x: position,
+                y: bounds.bottom + 20,
+                "text-anchor": "middle",
+            }, formatNumber(tick)),
+        );
+    });
+    const maximumSize = Math.max(...entries.map((entry) => entry.size), 0);
+    entries.forEach((entry, index) => {
+        const radius = maximumSize > 0
+            ? Math.max(4, Math.sqrt(entry.size / maximumSize) * 25)
+            : 4;
+        const mark = makeSvg("circle", {
+            cx: x(entry.x),
+            cy: y(entry.y),
+            r: radius,
+            fill: palette[index % palette.length],
+            "fill-opacity": 0.68,
+            stroke: "#fff",
+            "stroke-width": 1.5,
+        });
+        addTooltip(mark, `${entry.label}: X ${formatNumber(entry.x)}, Y ${formatNumber(entry.y)}, size ${formatNumber(entry.size)}`);
+        plot.append(mark);
+    });
+    addAxisTitles(plot, bounds, elements.xAxisLabel.value || "X", elements.yAxisLabel.value || "Y");
+}
+
+function drawErrorBarChart() {
+    const entries = rows
+        .map((row, index) => ({
+            label: getLabel(row, index),
+            y: row.y,
+            error: row.error,
+        }))
+        .filter((entry) => Number.isFinite(entry.y) && Number.isFinite(entry.error));
+    if (entries.some((entry) => entry.error < 0)) {
+        setChartError("Error amounts must be zero or greater.");
+        showChartMessage("Use non-negative error amounts.");
+        return;
+    }
+    if (entries.length === 0) {
+        setChartError("Enter both a Y value and a non-negative Error amount for at least one row.");
+        showChartMessage("Add Y values and error amounts.");
+        return;
+    }
+
+    const lows = entries.map((entry) => entry.y - entry.error);
+    const highs = entries.map((entry) => entry.y + entry.error);
+    const bounds = { left: 78, right: 778, top: 55, bottom: 333 };
+    const plot = makeSvg("g");
+    elements.chart.append(plot);
+    addChartTitle();
+    const [min, max] = paddedDomain([...lows, ...highs]);
+    const y = drawGrid(plot, min, max, bounds);
+    const band = (bounds.right - bounds.left) / entries.length;
+    entries.forEach((entry, index) => {
+        const centerX = bounds.left + band * (index + 0.5);
+        const upperY = y(entry.y + entry.error);
+        const lowerY = y(entry.y - entry.error);
+        const color = palette[index % palette.length];
+        const mark = makeSvg("line", {
+            x1: centerX,
+            y1: upperY,
+            x2: centerX,
+            y2: lowerY,
+            stroke: color,
+            "stroke-width": 2.5,
+        });
+        addTooltip(mark, `${entry.label}: ${formatNumber(entry.y)} ± ${formatNumber(entry.error)}`);
+        plot.append(
+            mark,
+            makeSvg("line", {
+                x1: centerX - 7,
+                y1: upperY,
+                x2: centerX + 7,
+                y2: upperY,
+                stroke: color,
+                "stroke-width": 2,
+            }),
+            makeSvg("line", {
+                x1: centerX - 7,
+                y1: lowerY,
+                x2: centerX + 7,
+                y2: lowerY,
+                stroke: color,
+                "stroke-width": 2,
+            }),
+            makeSvg("circle", {
+                cx: centerX,
+                cy: y(entry.y),
+                r: 5,
+                fill: color,
+                stroke: "#fff",
+                "stroke-width": 1.5,
+            }),
+        );
+    });
+    drawCategoryLabels(plot, entries, bounds, Math.max(1, Math.ceil(entries.length / 18)));
+    addAxisTitles(plot, bounds, elements.xAxisLabel.value || "Category", elements.yAxisLabel.value || "Value");
 }
 
 function fullCirclePath(cx, cy, radius) {
@@ -619,9 +831,7 @@ function drawPieChart(doughnut = false) {
     });
 }
 
-function drawHistogram() {
-    const entries = getYValues();
-    const values = entries.map((entry) => entry.value);
+function makeHistogramBins(values) {
     const [min, max] = paddedDomain(values);
     const binCount = Math.min(12, Math.max(3, Math.ceil(1 + Math.log2(values.length))));
     const binSize = (max - min) / binCount;
@@ -634,6 +844,34 @@ function drawHistogram() {
         const index = Math.min(binCount - 1, Math.floor((value - min) / binSize));
         bins[index].count += 1;
     });
+    return { min, max, bins };
+}
+
+function drawNumericXAxis(plot, min, max, bounds) {
+    const x = createScale(min, max, bounds.left, bounds.right);
+    numericTicks(min, max).forEach((tick) => {
+        const position = x(tick);
+        plot.append(
+            makeSvg("line", {
+                x1: position,
+                y1: bounds.bottom,
+                x2: position,
+                y2: bounds.bottom + 5,
+                class: "axis-line",
+            }),
+            makeSvg("text", {
+                x: position,
+                y: bounds.bottom + 20,
+                "text-anchor": "middle",
+            }, formatNumber(tick)),
+        );
+    });
+    return x;
+}
+
+function drawHistogram() {
+    const values = getYValues().map((entry) => entry.value);
+    const { bins } = makeHistogramBins(values);
     const bounds = { left: 78, right: 778, top: 55, bottom: 333 };
     const plot = makeSvg("g");
     elements.chart.append(plot);
@@ -641,7 +879,7 @@ function drawHistogram() {
     const maximumCount = Math.max(...bins.map((bin) => bin.count), 1);
     const y = drawGrid(plot, 0, maximumCount + Math.max(1, maximumCount * 0.08), bounds);
     const zeroY = y(0);
-    const band = (bounds.right - bounds.left) / binCount;
+    const band = (bounds.right - bounds.left) / bins.length;
     bins.forEach((bin, index) => {
         const barWidth = Math.max(1, band - 2);
         const mark = makeSvg("rect", {
@@ -661,6 +899,226 @@ function drawHistogram() {
         }, formatNumber(bin.start)));
     });
     addAxisTitles(plot, bounds, elements.xAxisLabel.value || "Value ranges", elements.yAxisLabel.value || "Frequency");
+}
+
+function drawParetoChart() {
+    const entries = getYValues().sort((first, second) => second.value - first.value);
+    if (entries.some((entry) => entry.value < 0)) {
+        setChartError("Pareto values must be non-negative.");
+        showChartMessage("Use non-negative category values.");
+        return;
+    }
+    const total = entries.reduce((sum, entry) => sum + entry.value, 0);
+    if (total <= 0) {
+        setChartError("Enter a positive total to draw a Pareto chart.");
+        showChartMessage("This chart needs a positive total.");
+        return;
+    }
+
+    const bounds = { left: 78, right: 744, top: 55, bottom: 333 };
+    const plot = makeSvg("g");
+    elements.chart.append(plot);
+    addChartTitle();
+    const maximum = Math.max(...entries.map((entry) => entry.value));
+    const [min, max] = paddedDomain([0, maximum], true);
+    const y = drawGrid(plot, min, max, bounds);
+    const band = (bounds.right - bounds.left) / entries.length;
+    let runningTotal = 0;
+    const cumulativePoints = [];
+    entries.forEach((entry, index) => {
+        const barWidth = Math.min(48, band * 0.68);
+        const valueY = y(entry.value);
+        const mark = makeSvg("rect", {
+            x: bounds.left + band * index + (band - barWidth) / 2,
+            y: valueY,
+            width: barWidth,
+            height: Math.max(1, y(0) - valueY),
+            rx: 4,
+            fill: palette[index % palette.length],
+        });
+        addTooltip(mark, `${entry.label}: ${formatNumber(entry.value)}`);
+        plot.append(mark);
+        runningTotal += entry.value;
+        cumulativePoints.push({
+            x: bounds.left + band * (index + 0.5),
+            y: bounds.bottom - (runningTotal / total) * (bounds.bottom - bounds.top),
+            percent: runningTotal / total * 100,
+        });
+    });
+    drawCategoryLabels(plot, entries, bounds, Math.max(1, Math.ceil(entries.length / 16)));
+    const cumulativePath = cumulativePoints
+        .map((point, index) => `${index === 0 ? "M" : "L"} ${point.x} ${point.y}`)
+        .join(" ");
+    plot.append(makeSvg("path", {
+        d: cumulativePath,
+        fill: "none",
+        stroke: "#d27a3e",
+        "stroke-width": 3,
+        "stroke-linecap": "round",
+        "stroke-linejoin": "round",
+    }));
+    cumulativePoints.forEach((point) => {
+        const mark = makeSvg("circle", {
+            cx: point.x,
+            cy: point.y,
+            r: 4,
+            fill: "#d27a3e",
+            stroke: "#fff",
+            "stroke-width": 1.5,
+        });
+        addTooltip(mark, `${formatNumber(point.percent)}% cumulative`);
+        plot.append(mark);
+    });
+    [0, 25, 50, 75, 100].forEach((percent) => {
+        const yPosition = bounds.bottom - (percent / 100) * (bounds.bottom - bounds.top);
+        plot.append(makeSvg("text", {
+            x: bounds.right + 8,
+            y: yPosition + 4,
+            "text-anchor": "start",
+        }, `${percent}%`));
+    });
+    plot.append(makeSvg("text", {
+        x: 792,
+        y: (bounds.top + bounds.bottom) / 2,
+        "text-anchor": "middle",
+        class: "axis-title",
+        transform: `rotate(90 792 ${(bounds.top + bounds.bottom) / 2})`,
+    }, "Cumulative %"));
+    addAxisTitles(plot, bounds, elements.xAxisLabel.value || "Category", elements.yAxisLabel.value || "Value");
+}
+
+function drawFrequencyPolygon() {
+    const values = getYValues().map((entry) => entry.value);
+    const { min, max, bins } = makeHistogramBins(values);
+    const bounds = { left: 78, right: 778, top: 55, bottom: 333 };
+    const plot = makeSvg("g");
+    elements.chart.append(plot);
+    addChartTitle();
+    const maxCount = Math.max(...bins.map((bin) => bin.count), 1);
+    const y = drawGrid(plot, 0, maxCount + Math.max(1, maxCount * 0.08), bounds);
+    const x = createScale(min, max, bounds.left, bounds.right);
+    const points = bins.map((bin) => ({
+        x: x((bin.start + bin.end) / 2),
+        y: y(bin.count),
+        count: bin.count,
+        center: (bin.start + bin.end) / 2,
+    }));
+    plot.append(makeSvg("path", {
+        d: points.map((point, index) => `${index === 0 ? "M" : "L"} ${point.x} ${point.y}`).join(" "),
+        fill: "none",
+        stroke: "#1682b3",
+        "stroke-width": 3,
+        "stroke-linecap": "round",
+        "stroke-linejoin": "round",
+    }));
+    points.forEach((point) => {
+        const mark = makeSvg("circle", {
+            cx: point.x,
+            cy: point.y,
+            r: 5,
+            fill: palette[0],
+            stroke: "#fff",
+            "stroke-width": 2,
+        });
+        addTooltip(mark, `Midpoint ${formatNumber(point.center)}: frequency ${point.count}`);
+        plot.append(mark);
+    });
+    drawNumericXAxis(plot, min, max, bounds);
+    addAxisTitles(plot, bounds, elements.xAxisLabel.value || "Value", elements.yAxisLabel.value || "Frequency");
+}
+
+function drawOgive() {
+    const values = getYValues().map((entry) => entry.value);
+    const { min, max, bins } = makeHistogramBins(values);
+    const bounds = { left: 78, right: 778, top: 55, bottom: 333 };
+    const plot = makeSvg("g");
+    elements.chart.append(plot);
+    addChartTitle();
+    const y = drawGrid(plot, 0, values.length, bounds);
+    const x = createScale(min, max, bounds.left, bounds.right);
+    let cumulative = 0;
+    const points = [{ x: x(min), y: y(0), value: min, cumulative: 0 }];
+    bins.forEach((bin) => {
+        cumulative += bin.count;
+        points.push({
+            x: x(bin.end),
+            y: y(cumulative),
+            value: bin.end,
+            cumulative,
+        });
+    });
+    plot.append(makeSvg("path", {
+        d: points.map((point, index) => `${index === 0 ? "M" : "L"} ${point.x} ${point.y}`).join(" "),
+        fill: "none",
+        stroke: "#1682b3",
+        "stroke-width": 3,
+        "stroke-linecap": "round",
+        "stroke-linejoin": "round",
+    }));
+    points.slice(1).forEach((point) => {
+        const mark = makeSvg("circle", {
+            cx: point.x,
+            cy: point.y,
+            r: 4.5,
+            fill: palette[0],
+            stroke: "#fff",
+            "stroke-width": 1.5,
+        });
+        addTooltip(mark, `At or below ${formatNumber(point.value)}: ${point.cumulative} value(s)`);
+        plot.append(mark);
+    });
+    drawNumericXAxis(plot, min, max, bounds);
+    addAxisTitles(plot, bounds, elements.xAxisLabel.value || "Value", elements.yAxisLabel.value || "Cumulative frequency");
+}
+
+function drawDensityPlot() {
+    const values = getYValues().map((entry) => entry.value);
+    const mean = values.reduce((sum, value) => sum + value, 0) / values.length;
+    const variance = values.reduce((sum, value) => sum + (value - mean) ** 2, 0) / values.length;
+    const deviation = Math.sqrt(variance);
+    const [dataMin, dataMax] = paddedDomain(values);
+    const bandwidth = deviation > 0
+        ? 1.06 * deviation * values.length ** -0.2
+        : (dataMax - dataMin) / 10;
+    const safeBandwidth = Math.max(bandwidth, Number.EPSILON);
+    const min = Math.min(dataMin, Math.min(...values) - safeBandwidth * 3);
+    const max = Math.max(dataMax, Math.max(...values) + safeBandwidth * 3);
+    const points = Array.from({ length: 61 }, (_, index) => {
+        const x = min + ((max - min) * index) / 60;
+        const density = values.reduce((sum, value) => {
+            const standardized = (x - value) / safeBandwidth;
+            return sum + Math.exp(-0.5 * standardized ** 2);
+        }, 0) / (values.length * safeBandwidth * Math.sqrt(2 * Math.PI));
+        return { x, density };
+    });
+    const maxDensity = Math.max(...points.map((point) => point.density));
+    const bounds = { left: 78, right: 778, top: 55, bottom: 333 };
+    const plot = makeSvg("g");
+    elements.chart.append(plot);
+    addChartTitle();
+    const y = drawGrid(plot, 0, maxDensity * 1.12, bounds);
+    const x = createScale(min, max, bounds.left, bounds.right);
+    const path = points
+        .map((point, index) => `${index === 0 ? "M" : "L"} ${x(point.x)} ${y(point.density)}`)
+        .join(" ");
+    plot.append(
+        makeSvg("path", {
+            d: `${path} L ${bounds.right} ${bounds.bottom} L ${bounds.left} ${bounds.bottom} Z`,
+            fill: "#8ed0e2",
+            "fill-opacity": 0.32,
+            stroke: "none",
+        }),
+        makeSvg("path", {
+            d: path,
+            fill: "none",
+            stroke: "#1682b3",
+            "stroke-width": 3,
+            "stroke-linecap": "round",
+            "stroke-linejoin": "round",
+        }),
+    );
+    drawNumericXAxis(plot, min, max, bounds);
+    addAxisTitles(plot, bounds, elements.xAxisLabel.value || "Value", elements.yAxisLabel.value || "Density");
 }
 
 function drawDotPlot() {
@@ -793,6 +1251,183 @@ function drawBoxPlot() {
     addAxisTitles(plot, { left: 78, right: 778, top: 55, bottom: 333 }, elements.xAxisLabel.value || "Value", "");
 }
 
+function drawStemAndLeafPlot() {
+    const values = getYValues().map((entry) => entry.value).sort((a, b) => a - b);
+    const useTenths = values.some((value) => !Number.isInteger(value));
+    const multiplier = useTenths ? 10 : 1;
+    const stems = new Map();
+    values.forEach((value) => {
+        const scaledValue = Math.round(value * multiplier);
+        const stem = Math.trunc(scaledValue / 10);
+        const leaf = Math.abs(scaledValue - stem * 10);
+        const leaves = stems.get(stem) || [];
+        leaves.push(leaf);
+        stems.set(stem, leaves);
+    });
+
+    const displayRows = [];
+    [...stems.entries()]
+        .sort(([first], [second]) => first - second)
+        .forEach(([stem, leaves]) => {
+            leaves.sort((first, second) => first - second);
+            for (let index = 0; index < leaves.length; index += 30) {
+                displayRows.push({
+                    stem: index === 0 ? String(stem) : "",
+                    leaves: leaves.slice(index, index + 30).join("  "),
+                });
+            }
+        });
+
+    const rowHeight = 24;
+    const viewHeight = Math.max(440, 128 + displayRows.length * rowHeight);
+    elements.chart.setAttribute("viewBox", `0 0 800 ${viewHeight}`);
+    addChartTitle();
+    elements.chart.append(
+        makeSvg("text", {
+            x: 255,
+            y: 66,
+            "text-anchor": "end",
+            class: "axis-title",
+        }, "Stem"),
+        makeSvg("text", {
+            x: 280,
+            y: 66,
+            class: "axis-title",
+        }, "Leaves"),
+    );
+    elements.chart.append(makeSvg("line", {
+        x1: 265,
+        y1: 52,
+        x2: 265,
+        y2: 77 + displayRows.length * rowHeight,
+        class: "axis-line",
+    }));
+    displayRows.forEach((row, index) => {
+        const y = 96 + index * rowHeight;
+        elements.chart.append(
+            makeSvg("text", {
+                x: 255,
+                y,
+                "text-anchor": "end",
+                "font-family": "Consolas, monospace",
+            }, row.stem),
+            makeSvg("text", {
+                x: 280,
+                y,
+                "font-family": "Consolas, monospace",
+            }, row.leaves),
+        );
+    });
+    const key = useTenths
+        ? "Key: 1 | 2 = 1.2; decimal values are rounded to tenths."
+        : "Key: 1 | 5 = 15.";
+    elements.chart.append(makeSvg("text", {
+        x: 400,
+        y: viewHeight - 22,
+        "text-anchor": "middle",
+        class: "axis-title",
+    }, key));
+}
+
+function inverseNormal(probability) {
+    const a = [
+        -39.6968302866538,
+        220.946098424521,
+        -275.928510446969,
+        138.357751867269,
+        -30.6647980661472,
+        2.50662827745924,
+    ];
+    const b = [
+        -54.4760987982241,
+        161.585836858041,
+        -155.698979859887,
+        66.8013118877197,
+        -13.2806815528857,
+    ];
+    const c = [
+        -0.00778489400243029,
+        -0.322396458041136,
+        -2.40075827716184,
+        -2.54973253934373,
+        4.37466414146497,
+        2.93816398269878,
+    ];
+    const d = [
+        0.00778469570904146,
+        0.32246712907004,
+        2.445134137143,
+        3.75440866190742,
+    ];
+    const low = 0.02425;
+    const high = 1 - low;
+    if (probability < low) {
+        const q = Math.sqrt(-2 * Math.log(probability));
+        return (((((c[0] * q + c[1]) * q + c[2]) * q + c[3]) * q + c[4]) * q + c[5]) /
+            ((((d[0] * q + d[1]) * q + d[2]) * q + d[3]) * q + 1);
+    }
+    if (probability > high) {
+        const q = Math.sqrt(-2 * Math.log(1 - probability));
+        return -(((((c[0] * q + c[1]) * q + c[2]) * q + c[3]) * q + c[4]) * q + c[5]) /
+            ((((d[0] * q + d[1]) * q + d[2]) * q + d[3]) * q + 1);
+    }
+    const q = probability - 0.5;
+    const r = q * q;
+    return (((((a[0] * r + a[1]) * r + a[2]) * r + a[3]) * r + a[4]) * r + a[5]) * q /
+        (((((b[0] * r + b[1]) * r + b[2]) * r + b[3]) * r + b[4]) * r + 1);
+}
+
+function drawQQPlot() {
+    const sample = getYValues().map((entry) => entry.value).sort((a, b) => a - b);
+    const points = sample.map((value, index) => ({
+        theoretical: inverseNormal((index + 0.5) / sample.length),
+        value,
+    }));
+    const bounds = { left: 78, right: 778, top: 55, bottom: 333 };
+    const plot = makeSvg("g");
+    elements.chart.append(plot);
+    addChartTitle();
+    const [xMin, xMax] = paddedDomain(points.map((point) => point.theoretical));
+    const [yMin, yMax] = paddedDomain(sample);
+    const x = createScale(xMin, xMax, bounds.left, bounds.right);
+    const y = drawGrid(plot, yMin, yMax, bounds);
+    drawNumericXAxis(plot, xMin, xMax, bounds);
+
+    const mean = sample.reduce((sum, value) => sum + value, 0) / sample.length;
+    const standardDeviation = Math.sqrt(
+        sample.reduce((sum, value) => sum + (value - mean) ** 2, 0) / sample.length,
+    );
+    const reference = makeSvg("line", {
+        x1: x(xMin),
+        y1: y(mean + standardDeviation * xMin),
+        x2: x(xMax),
+        y2: y(mean + standardDeviation * xMax),
+        stroke: "#d27a3e",
+        "stroke-width": 2,
+        "stroke-dasharray": "6 5",
+    });
+    addTooltip(reference, "Reference line based on the sample mean and standard deviation");
+    plot.append(reference);
+    points.forEach((point, index) => {
+        const mark = makeSvg("circle", {
+            cx: x(point.theoretical),
+            cy: y(point.value),
+            r: 5,
+            fill: palette[index % palette.length],
+            stroke: "#fff",
+            "stroke-width": 1.5,
+        });
+        addTooltip(mark, `Theoretical ${formatNumber(point.theoretical)}; sample ${formatNumber(point.value)}`);
+        plot.append(mark);
+    });
+    addAxisTitles(
+        plot,
+        bounds,
+        elements.xAxisLabel.value || "Theoretical normal quantile",
+        elements.yAxisLabel.value || "Sample quantile",
+    );
+}
+
 function renderDataTable() {
     elements.chartTable.replaceChildren();
     if (rows.length === 0) {
@@ -809,7 +1444,7 @@ function renderDataTable() {
     table.append(caption);
     const head = document.createElement("thead");
     const headerRow = document.createElement("tr");
-    ["Label", "X value", "Y value"].forEach((label) => {
+    ["Label", "X value", "Y value", "Error", "Size"].forEach((label) => {
         const cell = document.createElement("th");
         cell.scope = "col";
         cell.textContent = label;
@@ -820,7 +1455,7 @@ function renderDataTable() {
     const body = document.createElement("tbody");
     rows.forEach((row, index) => {
         const tableRow = document.createElement("tr");
-        [getLabel(row, index), row.x, row.y].forEach((value) => {
+        [getLabel(row, index), row.x, row.y, row.error, row.size].forEach((value) => {
             const cell = document.createElement("td");
             cell.textContent = typeof value === "number" ? formatNumber(value) : value ?? "—";
             tableRow.append(cell);
@@ -833,19 +1468,28 @@ function renderDataTable() {
 
 function updateChartHelp() {
     const help = {
-        bar: "Compare values across categories. Enter a label and a value for each row.",
+        "bar-h": "Compare categories with horizontal bars. Enter a label and a Y value for each row.",
+        bar: "Compare categories with vertical bars. Enter a label and a Y value for each row.",
+        pareto: "A Pareto chart sorts categories from largest to smallest and overlays a cumulative percentage line.",
         line: "See how values change across an ordered set of categories.",
         scatter: "Explore the relationship between two numeric variables. Each plotted row needs both an X and a Y value.",
+        bubble: "Compare three numeric variables. X and Y set each position; Size controls the bubble area.",
         pie: "Compare parts of a whole. Values must be non-negative and work best with 9 or fewer categories.",
         donut: "Compare parts of a whole and see their total. Values must be non-negative.",
         histogram: "See how numeric Y values are distributed. The chart groups values into intervals.",
+        frequency: "Join the frequency counts at the centre of each histogram interval.",
+        ogive: "Show cumulative frequency as values increase.",
+        density: "Estimate the shape of the distribution with a smoothed density curve.",
+        stem: "Split each number into a stem and a leaf to preserve the original values.",
         dot: "See every numeric Y value, with repeated values stacked into columns.",
+        qq: "Compare sample values with normal-distribution quantiles. A near-straight pattern suggests a roughly normal shape.",
+        error: "Show each Y value with a vertical plus/minus error amount from the Error column.",
         box: "Compare the minimum, first quartile, median, third quartile, and maximum of your Y values.",
         table: "View all labels and values together in a clean table.",
     };
     elements.chartHelp.textContent = help[elements.chartType.value];
     document.querySelectorAll(".axis-setting").forEach((setting) => {
-        setting.hidden = ["pie", "donut", "table"].includes(elements.chartType.value);
+        setting.hidden = ["pie", "donut", "stem", "table"].includes(elements.chartType.value);
     });
 }
 
@@ -887,24 +1531,52 @@ function renderChart() {
     const scatterValues = rows.filter(
         (row) => Number.isFinite(row.x) && Number.isFinite(row.y),
     );
+    const bubbleValues = rows.filter(
+        (row) =>
+            Number.isFinite(row.x) &&
+            Number.isFinite(row.y) &&
+            Number.isFinite(row.size),
+    );
+    const errorValues = rows.filter(
+        (row) => Number.isFinite(row.y) && Number.isFinite(row.error),
+    );
     if (type === "scatter" && scatterValues.length === 0) {
         setChartError("Enter at least one row with both an X value and a Y value to draw a scatter plot.");
         showChartMessage("Add numeric X and Y values.");
         return;
     }
-    if (type !== "scatter" && values.length === 0) {
+    if (type === "bubble" && bubbleValues.length === 0) {
+        setChartError("Enter X, Y, and Size values for at least one row to draw a bubble chart.");
+        showChartMessage("Add numeric X, Y, and Size values.");
+        return;
+    }
+    if (type === "error" && errorValues.length === 0) {
+        setChartError("Enter both a Y value and a non-negative Error amount for at least one row.");
+        showChartMessage("Add Y values and error amounts.");
+        return;
+    }
+    if (!["scatter", "bubble"].includes(type) && values.length === 0) {
         setChartError("Enter at least one numeric Y value to draw this chart.");
         showChartMessage("Add a numeric Y value to get started.");
         return;
     }
 
     elements.chart.replaceChildren();
-    if (type === "bar") {
+    elements.chart.setAttribute("viewBox", "0 0 800 440");
+    if (type === "bar-h") {
+        drawHorizontalBarChart();
+    } else if (type === "bar") {
         drawBarChart();
+    } else if (type === "pareto") {
+        drawParetoChart();
     } else if (type === "line") {
         drawLineChart();
     } else if (type === "scatter") {
         drawScatterChart();
+    } else if (type === "bubble") {
+        drawBubbleChart();
+    } else if (type === "error") {
+        drawErrorBarChart();
     } else if (type === "pie") {
         drawPieChart();
     } else if (type === "donut") {
@@ -915,11 +1587,29 @@ function renderChart() {
         drawDotPlot();
     } else if (type === "box") {
         drawBoxPlot();
+    } else if (type === "frequency") {
+        drawFrequencyPolygon();
+    } else if (type === "ogive") {
+        drawOgive();
+    } else if (type === "density") {
+        drawDensityPlot();
+    } else if (type === "stem") {
+        drawStemAndLeafPlot();
+    } else if (type === "qq") {
+        drawQQPlot();
     }
 
-    const plottedCount = type === "scatter" ? scatterValues.length : values.length;
+    const plottedCount = type === "scatter"
+        ? scatterValues.length
+        : type === "bubble"
+            ? bubbleValues.length
+            : type === "error"
+                ? errorValues.length
+                : values.length;
     const skippedCount = rows.length - plottedCount;
-    elements.chartCaption.textContent = skippedCount > 0
+    elements.chartCaption.textContent = type === "stem"
+        ? "Leaves preserve the sorted values; decimal inputs are rounded to tenths."
+        : skippedCount > 0
         ? `${plottedCount} plotted value${plottedCount === 1 ? "" : "s"}. Rows with blank numeric cells are skipped.`
         : `${plottedCount} plotted value${plottedCount === 1 ? "" : "s"}. Hover or tap a mark to see its value.`;
 }
@@ -962,6 +1652,26 @@ function renderEditor() {
         yInput.setAttribute("aria-label", `Y value for row ${index + 1}`);
         yCell.append(yInput);
 
+        const errorCell = document.createElement("td");
+        const errorInput = document.createElement("input");
+        errorInput.type = "number";
+        errorInput.min = "0";
+        errorInput.step = "any";
+        errorInput.value = row.error ?? "";
+        errorInput.dataset.field = "error";
+        errorInput.setAttribute("aria-label", `Error amount for row ${index + 1}`);
+        errorCell.append(errorInput);
+
+        const sizeCell = document.createElement("td");
+        const sizeInput = document.createElement("input");
+        sizeInput.type = "number";
+        sizeInput.min = "0";
+        sizeInput.step = "any";
+        sizeInput.value = row.size ?? "";
+        sizeInput.dataset.field = "size";
+        sizeInput.setAttribute("aria-label", `Bubble size for row ${index + 1}`);
+        sizeCell.append(sizeInput);
+
         const actionCell = document.createElement("td");
         const removeButton = document.createElement("button");
         removeButton.type = "button";
@@ -971,7 +1681,7 @@ function renderEditor() {
         removeButton.textContent = "×";
         actionCell.append(removeButton);
 
-        tableRow.append(labelCell, xCell, yCell, actionCell);
+        tableRow.append(labelCell, xCell, yCell, errorCell, sizeCell, actionCell);
         elements.dataRows.append(tableRow);
     });
     elements.addRow.disabled = rows.length >= maxRows;
@@ -983,7 +1693,13 @@ function setSample(name) {
     if (!sample) {
         return;
     }
-    rows = sample.rows.map(([label, x, y]) => ({ label, x, y }));
+    rows = sample.rows.map(([label, x, y, error, size]) => ({
+        label,
+        x,
+        y,
+        error,
+        size,
+    }));
     elements.chartTitle.value = sample.title;
     elements.chartType.value = sample.type;
     elements.xAxisLabel.value = sample.xLabel;
@@ -1002,8 +1718,8 @@ function csvEscape(value) {
 
 function downloadCsv() {
     const content = [
-        ["Label", "X", "Y"],
-        ...rows.map((row) => [row.label, row.x, row.y]),
+        ["Label", "X", "Y", "Error", "Size"],
+        ...rows.map((row) => [row.label, row.x, row.y, row.error, row.size]),
     ].map((line) => line.map(csvEscape).join(",")).join("\r\n");
     const url = URL.createObjectURL(new Blob([content], { type: "text/csv;charset=utf-8" }));
     const link = document.createElement("a");
@@ -1081,7 +1797,7 @@ function importCsv(text) {
     }
     const normalizedHeaders = grid[0].map((cell) => cell.trim().toLowerCase());
     const hasHeader = normalizedHeaders.some((cell) =>
-        ["label", "category", "name", "x", "x value", "y", "y value", "value"].includes(cell),
+        ["label", "category", "name", "x", "x value", "y", "y value", "value", "error", "size"].includes(cell),
     );
     const headers = hasHeader ? normalizedHeaders : [];
     const dataRows = hasHeader ? grid.slice(1) : grid;
@@ -1101,6 +1817,12 @@ function importCsv(text) {
     const yIndex = hasHeader
         ? headers.findIndex((header) => ["y", "y value", "value"].includes(header))
         : dataRows[0].length >= 3 ? 2 : dataRows[0].length === 1 ? 0 : 1;
+    const errorIndex = hasHeader
+        ? headers.findIndex((header) => header === "error")
+        : dataRows[0].length >= 4 ? 3 : -1;
+    const sizeIndex = hasHeader
+        ? headers.findIndex((header) => header === "size")
+        : dataRows[0].length >= 5 ? 4 : -1;
     if (yIndex < 0) {
         throw new Error("Add a Y or Value column to the CSV. X is optional.");
     }
@@ -1111,8 +1833,273 @@ function importCsv(text) {
             ? parseCsvNumber(cells[xIndex] || "", index + 2, "X")
             : null;
         const y = parseCsvNumber(cells[yIndex] || "", index + 2, "Y");
-        return { label, x, y };
+        const error = errorIndex >= 0
+            ? parseCsvNumber(cells[errorIndex] || "", index + 2, "Error")
+            : null;
+        const size = sizeIndex >= 0
+            ? parseCsvNumber(cells[sizeIndex] || "", index + 2, "Size")
+            : null;
+        return { label, x, y, error, size };
     });
+}
+
+function reportText(report, x, y, text, size = 14, color = "#26485c", weight = 400) {
+    report.append(makeSvg("text", {
+        x,
+        y,
+        fill: color,
+        "font-family": "Arial, sans-serif",
+        "font-size": size,
+        "font-weight": weight,
+    }, text));
+}
+
+function createReportSvg(chartCopy, selectedType) {
+    const reportWidth = 1600;
+    const viewBox = (chartCopy.getAttribute("viewBox") || "0 0 800 440")
+        .split(/\s+/)
+        .map(Number);
+    const chartWidth = 960;
+    const chartHeight = Math.max(510, chartWidth * (viewBox[3] / viewBox[2]));
+    const chartTop = 148;
+    const tableTop = Math.max(730, chartTop + chartHeight + 44);
+    const headerHeight = 38;
+    const rowHeight = 28;
+    const reportHeight = tableTop + headerHeight + rows.length * rowHeight + 70;
+    const report = makeSvg("svg", {
+        xmlns: svgNamespace,
+        width: reportWidth,
+        height: reportHeight,
+        viewBox: `0 0 ${reportWidth} ${reportHeight}`,
+    });
+    const style = makeSvg("style", {}, `
+        text { font-family: Arial, sans-serif; }
+        .chart-report text { fill: #627c8b; font-family: Arial, sans-serif; font-size: 11px; }
+        .chart-report .chart-main-title { fill: #26485c; font-size: 14px; font-weight: 700; }
+        .chart-report .axis-title { fill: #446678; font-size: 11px; font-weight: 700; }
+        .chart-report .grid-line { stroke: #e8eff3; stroke-width: 1; }
+        .chart-report .axis-line { stroke: #9db1bd; stroke-width: 1.2; }
+        .chart-report .data-mark { cursor: auto; }
+    `);
+    report.append(style, makeSvg("rect", {
+        x: 0,
+        y: 0,
+        width: reportWidth,
+        height: reportHeight,
+        fill: "#ffffff",
+    }));
+
+    report.append(makeSvg("rect", {
+        x: 1,
+        y: 1,
+        width: reportWidth - 2,
+        height: reportHeight - 2,
+        fill: "none",
+        stroke: "#dce9f0",
+        "stroke-width": 2,
+    }));
+    reportText(report, 54, 43, "MATH SOLVER++  /  GRAPHS & STATISTICS", 13, "#39738f", 700);
+    reportText(report, 54, 86, chartTitle(), 30, "#173448", 700);
+    const selectedLabel = selectedType === "table"
+        ? "Vertical bar chart (table view was selected)"
+        : elements.chartType.options[elements.chartType.selectedIndex].textContent;
+    reportText(report, 54, 116, `${selectedLabel}  •  ${rows.length} data rows`, 14, "#647d8b");
+
+    report.append(
+        makeSvg("rect", {
+            x: 40,
+            y: chartTop - 12,
+            width: 990,
+            height: chartHeight + 24,
+            rx: 14,
+            fill: "#ffffff",
+            stroke: "#dce9f0",
+            "stroke-width": 2,
+        }),
+        makeSvg("rect", {
+            x: 1050,
+            y: chartTop - 12,
+            width: 510,
+            height: chartHeight + 24,
+            rx: 14,
+            fill: "#ffffff",
+            stroke: "#dce9f0",
+            "stroke-width": 2,
+        }),
+    );
+    chartCopy.removeAttribute("id");
+    chartCopy.removeAttribute("hidden");
+    chartCopy.classList.remove("is-hidden");
+    chartCopy.setAttribute("class", "chart-report");
+    chartCopy.setAttribute("x", "55");
+    chartCopy.setAttribute("y", String(chartTop));
+    chartCopy.setAttribute("width", String(chartWidth));
+    chartCopy.setAttribute("height", String(chartHeight));
+    chartCopy.setAttribute("preserveAspectRatio", "xMidYMin meet");
+    report.append(chartCopy);
+
+    reportText(report, 1080, 174, "Statistics", 21, "#173448", 700);
+    reportText(
+        report,
+        1080,
+        198,
+        `${getYValues().length} numeric Y values`,
+        12,
+        "#647d8b",
+    );
+    const statItems = [...elements.statsSummary.querySelectorAll(".stat-item")];
+    if (statItems.length === 0) {
+        reportText(report, 1080, 238, "Add numeric Y values to calculate statistics.", 13, "#647d8b");
+    }
+    statItems.forEach((item, index) => {
+        const column = index % 2;
+        const row = Math.floor(index / 2);
+        const x = 1080 + column * 232;
+        const y = 222 + row * 52;
+        const label = item.querySelector(".stat-label").textContent;
+        const value = item.querySelector(".stat-value").textContent;
+        report.append(makeSvg("rect", {
+            x,
+            y,
+            width: 216,
+            height: 44,
+            rx: 7,
+            fill: "#f5fafc",
+            stroke: "#e5eef2",
+        }));
+        reportText(report, x + 10, y + 17, label, 10, "#738a97", 600);
+        reportText(report, x + 10, y + 35, value, 14, "#1d506c", 700);
+    });
+    reportText(
+        report,
+        1080,
+        Math.min(chartTop + chartHeight - 16, 690),
+        "Quartiles use the median of each half of the sorted data.",
+        10,
+        "#81939d",
+    );
+
+    reportText(report, 54, tableTop, "Data table", 21, "#173448", 700);
+    reportText(report, 54, tableTop + 22, "All rows included in this chart", 12, "#647d8b");
+    const tableX = 50;
+    const columnWidths = [600, 220, 220, 220, 240];
+    const headers = ["Label", "X value", "Y value", "Error", "Size"];
+    const tableY = tableTop + 36;
+    const tableWidth = columnWidths.reduce((sum, width) => sum + width, 0);
+    report.append(makeSvg("rect", {
+        x: tableX,
+        y: tableY,
+        width: tableWidth,
+        height: headerHeight,
+        rx: 5,
+        fill: "#eaf5fa",
+    }));
+    let columnX = tableX;
+    headers.forEach((header, index) => {
+        reportText(report, columnX + 12, tableY + 25, header, 12, "#355a6e", 700);
+        columnX += columnWidths[index];
+    });
+    rows.forEach((row, index) => {
+        const rowY = tableY + headerHeight + index * rowHeight;
+        if (index % 2 === 0) {
+            report.append(makeSvg("rect", {
+                x: tableX,
+                y: rowY,
+                width: tableWidth,
+                height: rowHeight,
+                fill: "#f8fbfc",
+            }));
+        }
+        const values = [
+            getLabel(row, index),
+            row.x === null || row.x === undefined ? "—" : formatNumber(row.x),
+            row.y === null || row.y === undefined ? "—" : formatNumber(row.y),
+            row.error === null || row.error === undefined ? "—" : formatNumber(row.error),
+            row.size === null || row.size === undefined ? "—" : formatNumber(row.size),
+        ];
+        let cellX = tableX;
+        values.forEach((value, cellIndex) => {
+            reportText(report, cellX + 12, rowY + 19, value, 11, "#355a6e");
+            cellX += columnWidths[cellIndex];
+        });
+        report.append(makeSvg("line", {
+            x1: tableX,
+            y1: rowY + rowHeight,
+            x2: tableX + tableWidth,
+            y2: rowY + rowHeight,
+            stroke: "#e7eef2",
+        }));
+    });
+    reportText(report, 54, reportHeight - 20, "Created with Math Solver++", 10, "#81939d");
+    return report;
+}
+
+function currentChartForReport() {
+    const selectedType = elements.chartType.value;
+    let chartCopy;
+    let chartError = "";
+    try {
+        if (selectedType === "table") {
+            elements.chartType.value = "bar";
+            renderChart();
+        }
+        if (!elements.chartError.hidden) {
+            chartError = elements.chartError.textContent;
+        } else {
+            chartCopy = elements.chart.cloneNode(true);
+        }
+    } finally {
+        elements.chartType.value = selectedType;
+        renderChart();
+    }
+    if (chartError) {
+        throw new Error(`Fix the chart before exporting: ${chartError}`);
+    }
+    return { chartCopy, selectedType };
+}
+
+async function downloadReportImage() {
+    elements.dataStatus.textContent = "Preparing the chart, statistics, and data table...";
+    const { chartCopy, selectedType } = currentChartForReport();
+    const report = createReportSvg(chartCopy, selectedType);
+    const svgBlob = new Blob(
+        [new XMLSerializer().serializeToString(report)],
+        { type: "image/svg+xml;charset=utf-8" },
+    );
+    const svgUrl = URL.createObjectURL(svgBlob);
+    try {
+        const image = new Image();
+        await new Promise((resolve, reject) => {
+            image.onload = resolve;
+            image.onerror = () => reject(new Error("The report image could not be rendered."));
+            image.src = svgUrl;
+        });
+        const canvas = document.createElement("canvas");
+        canvas.width = report.width.baseVal.value;
+        canvas.height = report.height.baseVal.value;
+        const context = canvas.getContext("2d");
+        if (!context) {
+            throw new Error("This browser could not create an image canvas.");
+        }
+        context.fillStyle = "#ffffff";
+        context.fillRect(0, 0, canvas.width, canvas.height);
+        context.drawImage(image, 0, 0, canvas.width, canvas.height);
+        const pngBlob = await new Promise((resolve) => canvas.toBlob(resolve, "image/png"));
+        if (!pngBlob) {
+            throw new Error("The browser could not encode the report as a PNG.");
+        }
+        const pngUrl = URL.createObjectURL(pngBlob);
+        const link = document.createElement("a");
+        link.href = pngUrl;
+        link.download = "math-solver-graph-report.png";
+        document.body.append(link);
+        link.click();
+        link.remove();
+        window.setTimeout(() => URL.revokeObjectURL(pngUrl), 1000);
+        elements.dataStatus.textContent = "Saved a PNG report with the chart, statistics, and full data table.";
+    } finally {
+        URL.revokeObjectURL(svgUrl);
+    }
 }
 
 elements.dataRows.addEventListener("input", (event) => {
@@ -1153,7 +2140,13 @@ elements.addRow.addEventListener("click", () => {
         elements.dataStatus.textContent = `A table can contain up to ${maxRows} rows.`;
         return;
     }
-    rows.push({ label: `Item ${rows.length + 1}`, x: rows.length + 1, y: null });
+    rows.push({
+        label: `Item ${rows.length + 1}`,
+        x: rows.length + 1,
+        y: null,
+        error: null,
+        size: null,
+    });
     elements.sampleData.value = "";
     elements.dataStatus.textContent = "Row added. Enter a Y value to include it in the chart.";
     renderEditor();
@@ -1171,6 +2164,16 @@ elements.chartTitle.addEventListener("input", renderAll);
 elements.xAxisLabel.addEventListener("input", renderAll);
 elements.yAxisLabel.addEventListener("input", renderAll);
 document.getElementById("export-csv").addEventListener("click", downloadCsv);
+elements.exportReport.addEventListener("click", async () => {
+    elements.exportReport.disabled = true;
+    try {
+        await downloadReportImage();
+    } catch (error) {
+        elements.dataStatus.textContent = `Could not export image: ${error.message}`;
+    } finally {
+        elements.exportReport.disabled = false;
+    }
+});
 
 elements.csvFile.addEventListener("change", async () => {
     const file = elements.csvFile.files[0];
