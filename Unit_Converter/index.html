@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta
+            name="description"
+            content="Convert everyday and scientific units with Math Solver++."
+        />
+        <title>Unit Converter | Math Solver++</title>
+        <link rel="icon" type="image/png" href="../icon.png" />
+        <link rel="stylesheet" href="style.css" />
+        <script src="script.js" defer></script>
+    </head>
+    <body>
+        <header class="site-header">
+            <a class="brand" href="/">
+                <img src="../icon.png" alt="" />
+                <span>math solver<span class="brand-plus">++</span></span>
+            </a>
+            <a class="home-link" href="/">Back to home <span aria-hidden="true">↗</span></a>
+        </header>
+
+        <main class="page-shell">
+            <section class="page-heading">
+                <p class="eyebrow">MATH SOLVER++ TOOLKIT</p>
+                <h1>Unit converter</h1>
+                <p class="intro">
+                    Choose a measurement, pick your units, and type on either
+                    side to convert instantly.
+                </p>
+            </section>
+
+            <section class="converter-card" aria-label="Unit converter">
+                <div class="category-section">
+                    <div class="section-topline">
+                        <h2>Measurement</h2>
+                        <span class="section-note">Select a category</span>
+                    </div>
+                    <nav
+                        id="category-tabs"
+                        class="category-tabs"
+                        aria-label="Measurement categories"
+                    ></nav>
+                </div>
+
+                <div class="converter-toolbar">
+                    <div>
+                        <p class="active-category" id="active-category">Length</p>
+                        <p class="converter-hint">
+                            Conversions update as you type
+                        </p>
+                    </div>
+                    <div class="toolbar-actions">
+                        <button class="tool-button" id="swap-units" type="button">
+                            <span aria-hidden="true">⇄</span>
+                            <span>Swap</span>
+                        </button>
+                        <button class="tool-button clear-button" id="clear-values" type="button">
+                            Clear
+                        </button>
+                    </div>
+                </div>
+
+                <div class="conversion-row">
+                    <section class="unit-panel source-panel" aria-label="From unit">
+                        <label for="from-unit">From</label>
+                        <select id="from-unit" aria-label="From unit"></select>
+                        <input
+                            id="from-value"
+                            type="text"
+                            inputmode="decimal"
+                            autocomplete="off"
+                            spellcheck="false"
+                            value="1"
+                            aria-label="Value to convert from"
+                        />
+                    </section>
+
+                    <div class="conversion-arrow" aria-hidden="true">→</div>
+
+                    <section class="unit-panel result-panel" aria-label="To unit">
+                        <label for="to-unit">To</label>
+                        <select id="to-unit" aria-label="To unit"></select>
+                        <input
+                            id="to-value"
+                            type="text"
+                            inputmode="decimal"
+                            autocomplete="off"
+                            spellcheck="false"
+                            aria-label="Converted value"
+                        />
+                    </section>
+                </div>
+
+                <p
+                    class="conversion-message"
+                    id="conversion-message"
+                    role="status"
+                    aria-live="polite"
+                ></p>
+                <p class="catalog-note">
+                    SI prefixes from quecto to quetta are included where
+                    applicable, alongside common customary and specialist units.
+                </p>
+            </section>
+
+            <p class="page-footnote">
+                Some measurements use conventional approximations (for example,
+                an average calendar month or standard sea-level Mach).
+            </p>
+        </main>
+    </body>
+</html>

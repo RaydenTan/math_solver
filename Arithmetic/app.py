@@ -1357,6 +1357,27 @@ def site_icon():
     return send_file(PROJECT_ROOT / "icon.png", mimetype="image/png")
 
 
+@app.route("/unit-converter/")
+def unit_converter():
+    return send_file(PROJECT_ROOT / "Unit_Converter" / "index.html")
+
+
+@app.route("/unit-converter/style.css")
+def unit_converter_stylesheet():
+    return send_file(
+        PROJECT_ROOT / "Unit_Converter" / "style.css",
+        mimetype="text/css",
+    )
+
+
+@app.route("/unit-converter/script.js")
+def unit_converter_script():
+    return send_file(
+        PROJECT_ROOT / "Unit_Converter" / "script.js",
+        mimetype="application/javascript",
+    )
+
+
 @app.route("/scientific-calculator")
 def scientific_calculator():
     return render_template("calculator.html")

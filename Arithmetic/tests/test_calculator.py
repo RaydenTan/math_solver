@@ -13,6 +13,7 @@ class CalculatorTests(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertIn(b"Math Solver++", response.data)
         self.assertIn(b"/scientific-calculator", response.data)
+        self.assertIn(b"/unit-converter/", response.data)
         self.assertIn(b"style.css", response.data)
         self.assertIn(b"script.js", response.data)
         response.close()
@@ -30,6 +31,25 @@ class CalculatorTests(unittest.TestCase):
         calculator_response = self.client.get("/scientific-calculator")
         self.assertEqual(calculator_response.status_code, 200)
         self.assertIn(b"Scientific Calculator", calculator_response.data)
+
+    def test_unit_converter_route_and_assets_are_available(self):
+        response = self.client.get("/unit-converter/")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b"category-tabs", response.data)
+        self.assertIn(b"script.js", response.data)
+        response.close()
+
+        for asset_path in (
+            "/unit-converter/style.css",
+            "/unit-converter/script.js",
+        ):
+            asset_response = self.client.get(asset_path)
+            self.assertEqual(asset_response.status_code, 200)
+            if asset_path.endswith("script.js"):
+                self.assertIn(b"Temperature", asset_response.data)
+                self.assertIn(b"Digital data", asset_response.data)
+            asset_response.close()
 
     def calculate(self, expression, angle="DEG"):
         response = self.client.post(
