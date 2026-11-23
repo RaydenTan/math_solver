@@ -1,13 +1,15 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, send_file
 import ast
 import math
 import random
 import re
 from dataclasses import dataclass
+from pathlib import Path
 import sympy as sp
 
 
 app = Flask(__name__)
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
 
 
 # ---------------------------------------------------------
@@ -1337,12 +1339,22 @@ def expression_for_answer(result):
 
 @app.route("/")
 def home():
-    return render_template("home.html")
+    return send_file(PROJECT_ROOT / "index.html")
+
+
+@app.route("/style.css")
+def home_stylesheet():
+    return send_file(PROJECT_ROOT / "style.css", mimetype="text/css")
+
+
+@app.route("/script.js")
+def home_script():
+    return send_file(PROJECT_ROOT / "script.js", mimetype="application/javascript")
 
 
 @app.route("/scientific-calculator")
 def scientific_calculator():
-    return render_template("index.html")
+    return render_template("calculator.html")
 
 
 @app.route("/calculate", methods=["POST"])

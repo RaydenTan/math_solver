@@ -21,6 +21,9 @@ if (menuToggle && navigation) {
             menuToggle.setAttribute("aria-expanded", "false");
             menuToggle.setAttribute("aria-label", "Open navigation menu");
             navigation.classList.remove("is-open");
+            dropdowns.forEach((dropdown) => {
+                dropdown.open = false;
+            });
         }
     });
 }

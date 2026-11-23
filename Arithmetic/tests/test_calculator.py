@@ -13,6 +13,16 @@ class CalculatorTests(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertIn(b"Math Solver++", response.data)
         self.assertIn(b"/scientific-calculator", response.data)
+        self.assertIn(b"style.css", response.data)
+        self.assertIn(b"script.js", response.data)
+        response.close()
+
+        stylesheet_response = self.client.get("/style.css")
+        script_response = self.client.get("/script.js")
+        self.assertEqual(stylesheet_response.status_code, 200)
+        self.assertEqual(script_response.status_code, 200)
+        stylesheet_response.close()
+        script_response.close()
 
         calculator_response = self.client.get("/scientific-calculator")
         self.assertEqual(calculator_response.status_code, 200)
