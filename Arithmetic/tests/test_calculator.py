@@ -14,6 +14,7 @@ class CalculatorTests(unittest.TestCase):
         self.assertIn(b"Math Solver++", response.data)
         self.assertIn(b"/scientific-calculator", response.data)
         self.assertIn(b"/unit-converter/", response.data)
+        self.assertIn(b"/algebra/", response.data)
         self.assertIn(b"style.css", response.data)
         self.assertIn(b"script.js", response.data)
         response.close()
@@ -50,6 +51,73 @@ class CalculatorTests(unittest.TestCase):
                 self.assertIn(b"Temperature", asset_response.data)
                 self.assertIn(b"Digital data", asset_response.data)
             asset_response.close()
+
+    def test_algebra_solver_routes_and_solves_symbolic_equations(self):
+        response = self.client.get("/algebra/")
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b"Variables", response.data)
+        self.assertIn(b"inputmode=\"none\"", response.data)
+        response.close()
+
+        for asset_path in ("/algebra/style.css", "/algebra/script.js"):
+            asset_response = self.client.get(asset_path)
+            self.assertEqual(asset_response.status_code, 200)
+            asset_response.close()
+
+        system_response = self.client.post(
+            "/algebra/solve",
+            json={"equations": ["2x + y = 7", "", "x - y = 2"]},
+        )
+        self.assertEqual(system_response.status_code, 200)
+        assignments = system_response.get_json()["solutions"][0]["assignments"]
+        self.assertEqual(
+            [(item["variable"], item["value"]) for item in assignments],
+            [("x", "3"), ("y", "1")],
+        )
+        system_response.close()
+
+        radical_response = self.client.post(
+            "/algebra/solve",
+            json={"equations": ["x^2 = 2"]},
+        )
+        self.assertEqual(radical_response.status_code, 200)
+        values = {
+            solution["assignments"][0]["value"]
+            for solution in radical_response.get_json()["solutions"]
+        }
+        self.assertEqual(values, {"√2", "-√2"})
+        radical_response.close()
+
+        periodic_response = self.client.post(
+            "/algebra/solve",
+            json={"equations": ["sin(x) = 0"]},
+        )
+        self.assertEqual(periodic_response.status_code, 200)
+        periodic_result = periodic_response.get_json()
+        self.assertIn("complete symbolic solution set", periodic_result["status"])
+        self.assertIn(
+            "ℤ",
+            periodic_result["solutions"][0]["assignments"][0]["value"],
+        )
+        periodic_response.close()
+
+        fraction_response = self.client.post(
+            "/algebra/solve",
+            json={"equations": ["x / 2 = 1 / 3"]},
+        )
+        self.assertEqual(fraction_response.status_code, 200)
+        fraction_value = fraction_response.get_json()["solutions"][0]["assignments"][0]["value"]
+        self.assertEqual(fraction_value, "2/3")
+        fraction_response.close()
+
+    def test_algebra_solver_rejects_unsupported_functions(self):
+        response = self.client.post(
+            "/algebra/solve",
+            json={"equations": ["__import__('os')"]},
+        )
+        self.assertEqual(response.status_code, 400)
+        self.assertIn("Unsupported algebra function", response.get_json()["error"])
+        response.close()
 
     def calculate(self, expression, angle="DEG"):
         response = self.client.post(
