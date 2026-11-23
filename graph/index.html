@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta
+            name="description"
+            content="Create clear charts, edit data, and explore statistics with Math Solver++."
+        />
+        <title>Graphs &amp; Statistics v1 | Math Solver++</title>
+        <link rel="icon" type="image/png" href="/icon.png" />
+        <link rel="stylesheet" href="/graph/style.css" />
+        <script src="/graph/script.js" defer></script>
+    </head>
+    <body>
+        <header class="site-header">
+            <a class="brand" href="/">
+                <img src="/icon.png" alt="" />
+                <span>math solver<span class="brand-plus">++</span></span>
+                <span class="version">v1</span>
+            </a>
+            <a class="home-link" href="/">Back to home <span aria-hidden="true">↗</span></a>
+        </header>
+
+        <main class="page-shell">
+            <section class="page-heading">
+                <p class="eyebrow">MATH SOLVER++ TOOLKIT</p>
+                <h1>Graphs &amp; statistics <span class="version">v1</span></h1>
+                <p>
+                    Enter or import data, choose a chart, and get a clear
+                    statistical summary. Your data stays in this browser.
+                </p>
+            </section>
+
+            <div class="workspace">
+                <section class="main-column" aria-label="Graph and data workspace">
+                    <section class="card chart-card" aria-labelledby="chart-heading">
+                        <div class="card-heading">
+                            <div>
+                                <p class="eyebrow">VISUALISE YOUR DATA</p>
+                                <h2 id="chart-heading">Your chart</h2>
+                            </div>
+                            <label class="chart-type-control" for="chart-type">
+                                Chart type
+                                <select id="chart-type">
+                                    <option value="bar">Bar chart</option>
+                                    <option value="line">Line chart</option>
+                                    <option value="scatter">Scatter plot</option>
+                                    <option value="pie">Pie chart</option>
+                                    <option value="donut">Doughnut chart</option>
+                                    <option value="histogram">Histogram</option>
+                                    <option value="dot">Dot plot</option>
+                                    <option value="box">Box plot</option>
+                                    <option value="table">Data table</option>
+                                </select>
+                            </label>
+                        </div>
+
+                        <div class="chart-settings">
+                            <label>
+                                Chart title
+                                <input id="chart-title" type="text" maxlength="80" value="Monthly sales" />
+                            </label>
+                            <label class="axis-setting">
+                                Horizontal axis
+                                <input id="x-axis-label" type="text" maxlength="40" value="Month" />
+                            </label>
+                            <label class="axis-setting">
+                                Vertical axis
+                                <input id="y-axis-label" type="text" maxlength="40" value="Sales" />
+                            </label>
+                        </div>
+
+                        <p id="chart-help" class="chart-help">
+                            Compare values across categories. Enter a label and a value for each row.
+                        </p>
+                        <p id="chart-error" class="chart-error" role="alert" hidden></p>
+                        <figure class="chart-figure">
+                            <svg
+                                id="chart"
+                                class="chart"
+                                viewBox="0 0 800 440"
+                                role="img"
+                                aria-label="Monthly sales bar chart"
+                            ></svg>
+                            <div id="chart-table" class="chart-table" hidden></div>
+                            <figcaption id="chart-caption">
+                                Hover or tap a chart mark to see its value.
+                            </figcaption>
+                        </figure>
+                    </section>
+
+                    <section class="card data-card" aria-labelledby="data-heading">
+                        <div class="card-heading data-heading">
+                            <div>
+                                <p class="eyebrow">EDIT YOUR DATA</p>
+                                <h2 id="data-heading">Data table</h2>
+                                <p class="section-description">
+                                    Change a cell to update the chart and statistics.
+                                </p>
+                            </div>
+                            <label class="sample-control" for="sample-data">
+                                Start with
+                                <select id="sample-data">
+                                    <option value="">Choose sample data...</option>
+                                    <option value="sales">Monthly sales</option>
+                                    <option value="survey">Favourite fruit survey</option>
+                                    <option value="scores">Class test scores</option>
+                                    <option value="blank">Blank table</option>
+                                </select>
+                            </label>
+                        </div>
+
+                        <div class="data-actions">
+                            <button id="add-row" class="secondary-button" type="button">+ Add row</button>
+                            <label class="secondary-button file-button" for="csv-file">Import CSV</label>
+                            <input id="csv-file" class="visually-hidden" type="file" accept=".csv,text/csv" />
+                            <button id="export-csv" class="secondary-button" type="button">Export CSV</button>
+                        </div>
+                        <p id="data-status" class="data-status" role="status" aria-live="polite"></p>
+
+                        <div class="table-scroll">
+                            <table class="editor-table">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Label</th>
+                                        <th scope="col">X value</th>
+                                        <th scope="col">Y value</th>
+                                        <th scope="col"><span class="visually-hidden">Remove row</span></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="data-rows"></tbody>
+                            </table>
+                        </div>
+                        <p class="field-help">
+                            Use labels and Y values for most charts. Scatter plots use numeric X and Y values;
+                            histograms and box plots use Y values only.
+                        </p>
+                    </section>
+                </section>
+
+                <aside class="card stats-card" aria-labelledby="stats-heading">
+                    <div class="card-heading">
+                        <div>
+                            <p class="eyebrow">UNDERSTAND THE NUMBERS</p>
+                            <h2 id="stats-heading">Statistics</h2>
+                        </div>
+                        <span class="stats-icon" aria-hidden="true">Σ</span>
+                    </div>
+                    <p id="stats-description" class="stats-description">
+                        Calculated from the valid Y values in your table.
+                    </p>
+                    <div id="stats-summary" class="stats-summary" aria-live="polite"></div>
+                    <p class="stats-note">
+                        Quartiles use the median of each half of the sorted data.
+                        Standard deviation is shown for both a sample and a population.
+                    </p>
+                </aside>
+            </div>
+        </main>
+
+        <footer class="site-footer">
+            <a class="brand footer-brand" href="/">
+                <img src="/icon.png" alt="" />
+                <span>math solver<span class="brand-plus">++</span></span>
+                <span class="version">v1</span>
+            </a>
+            <p>Clear charts. Useful statistics. More ways to learn.</p>
+        </footer>
+    </body>
+</html>

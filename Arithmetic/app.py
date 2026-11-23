@@ -1755,6 +1755,24 @@ def algebra_script():
     )
 
 
+@app.route("/graph/")
+def graph_statistics():
+    return send_file(PROJECT_ROOT / "graph" / "index.html")
+
+
+@app.route("/graph/style.css")
+def graph_statistics_stylesheet():
+    return send_file(PROJECT_ROOT / "graph" / "style.css", mimetype="text/css")
+
+
+@app.route("/graph/script.js")
+def graph_statistics_script():
+    return send_file(
+        PROJECT_ROOT / "graph" / "script.js",
+        mimetype="application/javascript",
+    )
+
+
 @app.route("/algebra/solve", methods=["POST"])
 def algebra_solve():
     data = request.get_json(silent=True) or {}

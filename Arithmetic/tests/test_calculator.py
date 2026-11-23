@@ -15,6 +15,7 @@ class CalculatorTests(unittest.TestCase):
         self.assertIn(b"/scientific-calculator", response.data)
         self.assertIn(b"/unit-converter/", response.data)
         self.assertIn(b"/algebra/", response.data)
+        self.assertIn(b"/graph/", response.data)
         self.assertIn(b"style.css", response.data)
         self.assertIn(b"script.js", response.data)
         response.close()
@@ -112,6 +113,20 @@ class CalculatorTests(unittest.TestCase):
         fraction_value = fraction_response.get_json()["solutions"][0]["assignments"][0]["value"]
         self.assertEqual(fraction_value, "2/3")
         fraction_response.close()
+
+    def test_graph_statistics_route_and_assets_are_available(self):
+        response = self.client.get("/graph/")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b"Graphs &amp; statistics", response.data)
+        self.assertIn(b"Import CSV", response.data)
+        self.assertIn(b"Statistics", response.data)
+        response.close()
+
+        for asset_path in ("/graph/style.css", "/graph/script.js"):
+            asset_response = self.client.get(asset_path)
+            self.assertEqual(asset_response.status_code, 200)
+            asset_response.close()
 
     def test_algebra_solver_rejects_unsupported_functions(self):
         response = self.client.post(
