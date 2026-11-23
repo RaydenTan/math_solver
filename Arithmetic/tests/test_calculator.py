@@ -7,6 +7,17 @@ class CalculatorTests(unittest.TestCase):
     def setUp(self):
         self.client = app.test_client()
 
+    def test_homepage_links_to_the_scientific_calculator(self):
+        response = self.client.get("/")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b"Math Solver++", response.data)
+        self.assertIn(b"/scientific-calculator", response.data)
+
+        calculator_response = self.client.get("/scientific-calculator")
+        self.assertEqual(calculator_response.status_code, 200)
+        self.assertIn(b"Scientific Calculator", calculator_response.data)
+
     def calculate(self, expression, angle="DEG"):
         response = self.client.post(
             "/calculate",

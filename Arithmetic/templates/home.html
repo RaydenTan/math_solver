@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta
+            name="description"
+            content="Math Solver++ brings helpful math tools together, from a scientific calculator to graphs and unit conversions."
+        />
+        <title>Math Solver++ | Math tools made simpler</title>
+        <link
+            rel="stylesheet"
+            href="{{ url_for('static', filename='home.css') }}"
+        />
+        <script
+            src="{{ url_for('static', filename='home.js') }}"
+            defer
+        ></script>
+    </head>
+    <body>
+        <header class="site-header">
+            <div class="header-inner">
+                <a class="brand" href="/" aria-label="Math Solver++ home">
+                    <span class="brand-mark" aria-hidden="true">∑</span>
+                    <span>math solver<span class="brand-plus">++</span></span>
+                </a>
+
+                <button
+                    class="menu-toggle"
+                    type="button"
+                    aria-label="Open navigation menu"
+                    aria-expanded="false"
+                    aria-controls="primary-navigation"
+                >
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+
+                <nav
+                    class="primary-navigation"
+                    id="primary-navigation"
+                    aria-label="Main navigation"
+                >
+                    <details class="nav-dropdown">
+                        <summary>Arithmetic</summary>
+                        <div class="dropdown-menu">
+                            <a href="/scientific-calculator">Scientific calculator</a>
+                        </div>
+                    </details>
+                    <details class="nav-dropdown">
+                        <summary>Algebra</summary>
+                        <div class="dropdown-menu">
+                            <span>Under progress</span>
+                        </div>
+                    </details>
+                    <details class="nav-dropdown">
+                        <summary>Geometry</summary>
+                        <div class="dropdown-menu">
+                            <span>Under progress</span>
+                        </div>
+                    </details>
+                    <details class="nav-dropdown">
+                        <summary>Graphs &amp; statistics</summary>
+                        <div class="dropdown-menu">
+                            <span>Under progress</span>
+                        </div>
+                    </details>
+                    <details class="nav-dropdown">
+                        <summary>Unit converter</summary>
+                        <div class="dropdown-menu">
+                            <span>Under progress</span>
+                        </div>
+                    </details>
+                </nav>
+            </div>
+        </header>
+
+        <main>
+            <section class="intro-section">
+                <div class="intro-copy">
+                    <p class="eyebrow"><span></span> YOUR EVERYDAY MATH TOOLKIT</p>
+                    <h1>Big ideas.<br /><span>Simpler solutions.</span></h1>
+                    <p class="intro-text">
+                        From quick calculations to curious graphs, find the math
+                        tools you need — all in one place.
+                    </p>
+                    <a class="primary-button" href="/scientific-calculator">
+                        Open scientific calculator
+                        <span aria-hidden="true">↗</span>
+                    </a>
+                </div>
+
+                <div class="math-art" aria-hidden="true">
+                    <span class="art-orbit orbit-one"></span>
+                    <span class="art-orbit orbit-two"></span>
+                    <span class="art-star star-one">✳</span>
+                    <span class="art-star star-two">✳</span>
+                    <span class="art-equation equation-one">x² + y²</span>
+                    <span class="art-equation equation-two">∫ f(x) dx</span>
+                    <span class="art-equation equation-three">π ≈ 3.14</span>
+                    <span class="art-center">∑</span>
+                </div>
+                <span class="intro-decoration" aria-hidden="true">+</span>
+            </section>
+
+            <section class="tools-section" aria-labelledby="tools-heading">
+                <div class="section-heading">
+                    <div>
+                        <p class="eyebrow">PICK A TOOL</p>
+                        <h2 id="tools-heading">A little help with the numbers.</h2>
+                    </div>
+                    <p>Five ways to make math feel more manageable.</p>
+                </div>
+
+                <div class="tool-grid">
+                    <article class="tool-card arithmetic-card">
+                        <div class="card-top">
+                            <span class="tool-icon" aria-hidden="true">＋</span>
+                            <span class="card-number">01</span>
+                        </div>
+                        <h3>Arithmetic</h3>
+                        <p>
+                            Work through everyday calculations with a powerful
+                            scientific calculator.
+                        </p>
+                        <a href="/scientific-calculator" class="card-link">
+                            Try scientific calculator <span aria-hidden="true">↗</span>
+                        </a>
+                    </article>
+
+                    <article class="tool-card algebra-card">
+                        <div class="card-top">
+                            <span class="tool-icon" aria-hidden="true">x²</span>
+                            <span class="card-number">02</span>
+                        </div>
+                        <h3>Algebra</h3>
+                        <p>
+                            Explore equations, variables and patterns. Algebra
+                            tools are on the way.
+                        </p>
+                        <span class="coming-soon">Under progress</span>
+                    </article>
+
+                    <article class="tool-card geometry-card">
+                        <div class="card-top">
+                            <span class="tool-icon" aria-hidden="true">△</span>
+                            <span class="card-number">03</span>
+                        </div>
+                        <h3>Geometry</h3>
+                        <p>
+                            Get ready to explore shapes, space and the math
+                            behind them.
+                        </p>
+                        <span class="coming-soon">Under progress</span>
+                    </article>
+
+                    <article class="tool-card graphs-card">
+                        <div class="card-top">
+                            <span class="tool-icon bar-icon" aria-hidden="true">
+                                <i></i><i></i><i></i>
+                            </span>
+                            <span class="card-number">04</span>
+                        </div>
+                        <h3>Graphs &amp; statistics</h3>
+                        <p>
+                            Turn data into clear charts and discover what the
+                            numbers are saying.
+                        </p>
+                        <span class="coming-soon">Under progress</span>
+                    </article>
+
+                    <article class="tool-card converter-card">
+                        <div class="card-top">
+                            <span class="tool-icon" aria-hidden="true">↔</span>
+                            <span class="card-number">05</span>
+                        </div>
+                        <h3>Unit converter</h3>
+                        <p>
+                            Switch between useful units for length, mass,
+                            temperature and more.
+                        </p>
+                        <span class="coming-soon">Under progress</span>
+                    </article>
+                </div>
+            </section>
+        </main>
+
+        <footer class="site-footer">
+            <a class="brand footer-brand" href="/">
+                <span class="brand-mark" aria-hidden="true">∑</span>
+                <span>math solver<span class="brand-plus">++</span></span>
+            </a>
+            <p>More tools are Under progress. Stay curious.</p>
+            <span class="footer-note">Made for the love of learning <span aria-hidden="true">✳</span></span>
+        </footer>
+    </body>
+</html>

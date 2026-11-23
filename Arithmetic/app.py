@@ -1337,6 +1337,11 @@ def expression_for_answer(result):
 
 @app.route("/")
 def home():
+    return render_template("home.html")
+
+
+@app.route("/scientific-calculator")
+def scientific_calculator():
     return render_template("index.html")
 
 
