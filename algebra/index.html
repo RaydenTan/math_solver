@@ -7,7 +7,7 @@
             name="description"
             content="Solve equations and systems of equations with Math Solver++ Algebra."
         />
-        <title>Algebra Solver v1 | Math Solver++</title>
+        <title>Algebra Solver v1.5 | Math Solver++</title>
         <link rel="icon" type="image/png" href="../icon.png" />
         <link rel="stylesheet" href="style.css" />
         <script src="script.js" defer></script>
@@ -18,121 +18,368 @@
                 <img src="../icon.png" alt="" />
                 <span>math solver<span class="brand-plus">++</span></span>
             </a>
-            <a class="home-link" href="/">Back to home <span aria-hidden="true">↗</span></a>
+            <a class="home-link" href="/"
+                >Back to home <span aria-hidden="true">↗</span></a
+            >
         </header>
 
         <main class="page-shell">
             <section class="page-heading">
                 <p class="eyebrow">MATH SOLVER++ TOOLKIT</p>
-                <h1>Algebra solver <span class="page-version">v1</span></h1>
+                <h1>Algebra solver <span class="page-version">v1.5</span></h1>
                 <p class="intro">
-                    Enter one equation per line. Use Enter or + Add equation
-                    for a system, then solve for every variable.
+                    Choose what you want to do: solve for variables, evaluate an
+                    expression from a system, or simplify an expression.
                 </p>
             </section>
 
             <section class="workspace" aria-label="Algebra solver">
                 <div class="workspace-main">
-                    <div class="equation-heading">
-                        <div>
-                            <h2>Your equations</h2>
-                            <p>Use = for an equation, or enter an expression to set it equal to zero.</p>
-                        </div>
-                        <button class="secondary-button" id="add-equation" type="button">
-                            <span aria-hidden="true">＋</span> Add equation
-                        </button>
+                    <div class="goal-picker">
+                        <label for="goal-mode">What do you want to find?</label>
+                        <select id="goal-mode">
+                            <option value="">Select a goal…</option>
+                            <option value="solve">
+                                Find all variable values
+                            </option>
+                            <option value="evaluate">
+                                Find the value of an expression
+                            </option>
+                            <option value="simplify">
+                                Simplify or transform an expression
+                            </option>
+                        </select>
+                        <p id="mode-help">
+                            Choose a goal to see the right inputs.
+                        </p>
                     </div>
 
-                    <label class="sr-only" for="equations">Equations, one per line</label>
-                    <textarea
-                        id="equations"
-                        rows="5"
-                        spellcheck="false"
-                        autocomplete="off"
-                        autocapitalize="off"
-                        inputmode="none"
-                        virtualkeyboardpolicy="manual"
-                        placeholder="e.g. 2x + 3 = 7"
-                        aria-describedby="equation-help"
-                    ></textarea>
-                    <p class="field-help" id="equation-help">
-                        Example: 2x + y = 7 on line 1, then x - y = 2 on line 2.
-                        Type or use the keypad below.
-                    </p>
-
-                    <div class="editor-toolbar">
-                        <div class="keypad-tabs" role="tablist" aria-label="Keypad type">
+                    <section class="mode-input" id="equation-input" hidden>
+                        <div class="equation-heading">
+                            <div>
+                                <h2 id="equation-heading">Your equations</h2>
+                                <p id="equation-description">
+                                    Use one equation per line. An expression
+                                    without = is treated as equal to zero.
+                                </p>
+                            </div>
                             <button
-                                class="keypad-tab active"
-                                id="numbers-tab"
+                                class="secondary-button"
+                                id="add-equation"
                                 type="button"
-                                role="tab"
-                                aria-selected="true"
-                                aria-controls="number-keypad"
                             >
-                                1 · Numbers
-                            </button>
-                            <button
-                                class="keypad-tab"
-                                id="letters-tab"
-                                type="button"
-                                role="tab"
-                                aria-selected="false"
-                                aria-controls="letter-keypad"
-                            >
-                                A–Z · Variables
+                                <span aria-hidden="true">＋</span> Add equation
                             </button>
                         </div>
-                        <span class="keyboard-note">On-screen keypad</span>
+
+                        <label class="sr-only" for="equations"
+                            >Equations, one per line</label
+                        >
+                        <textarea
+                            id="equations"
+                            rows="5"
+                            spellcheck="false"
+                            autocomplete="off"
+                            autocapitalize="off"
+                            inputmode="none"
+                            virtualkeyboardpolicy="manual"
+                            placeholder="e.g. 2x + y = 7"
+                            aria-describedby="equation-help"
+                        ></textarea>
+                        <p class="field-help" id="equation-help">
+                            Example: 2x + y = 7 on line 1, then x - y = 2 on
+                            line 2.
+                        </p>
+                    </section>
+
+                    <section class="mode-input" id="target-input" hidden>
+                        <label class="field-label" for="target-expression">
+                            Expression to evaluate
+                        </label>
+                        <textarea
+                            id="target-expression"
+                            rows="2"
+                            spellcheck="false"
+                            autocomplete="off"
+                            autocapitalize="off"
+                            inputmode="none"
+                            virtualkeyboardpolicy="manual"
+                            placeholder="e.g. x^2 + y^2"
+                        ></textarea>
+                        <p class="field-help">
+                            The expression is evaluated for every solution of
+                            your equation system.
+                        </p>
+                    </section>
+
+                    <section class="mode-input" id="simplify-input" hidden>
+                        <label class="field-label" for="expression-input">
+                            Expression to simplify
+                        </label>
+                        <textarea
+                            id="expression-input"
+                            rows="3"
+                            spellcheck="false"
+                            autocomplete="off"
+                            autocapitalize="off"
+                            inputmode="none"
+                            virtualkeyboardpolicy="manual"
+                            placeholder="e.g. (x + 1)(x + 2)"
+                        ></textarea>
+                        <div class="operation-picker">
+                            <label for="simplify-operation">Operation</label>
+                            <select id="simplify-operation">
+                                <option value="simplify">
+                                    Simplify expression
+                                </option>
+                                <option value="expand">Expand brackets</option>
+                                <option value="factor">
+                                    Factor expression
+                                </option>
+                                <option value="collect">
+                                    Collect like terms
+                                </option>
+                            </select>
+                        </div>
+                    </section>
+
+                    <div id="keypad-section" hidden>
+                        <div class="editor-toolbar">
+                            <div
+                                class="keypad-tabs"
+                                role="tablist"
+                                aria-label="Keypad type"
+                            >
+                                <button
+                                    class="keypad-tab active"
+                                    id="numbers-tab"
+                                    type="button"
+                                    role="tab"
+                                    aria-selected="true"
+                                    aria-controls="number-keypad"
+                                >
+                                    1 · Numbers
+                                </button>
+                                <button
+                                    class="keypad-tab"
+                                    id="letters-tab"
+                                    type="button"
+                                    role="tab"
+                                    aria-selected="false"
+                                    aria-controls="letter-keypad"
+                                >
+                                    A–Z · Variables
+                                </button>
+                            </div>
+                            <span class="keyboard-note">On-screen keypad</span>
+                        </div>
+
+                        <div
+                            id="number-keypad"
+                            class="keypad"
+                            role="tabpanel"
+                            aria-labelledby="numbers-tab"
+                        >
+                            <button type="button" class="key" data-insert="7">
+                                7
+                            </button>
+                            <button type="button" class="key" data-insert="8">
+                                8
+                            </button>
+                            <button type="button" class="key" data-insert="9">
+                                9
+                            </button>
+                            <button
+                                type="button"
+                                class="key utility"
+                                data-action="backspace"
+                            >
+                                DEL
+                            </button>
+                            <button
+                                type="button"
+                                class="key utility"
+                                data-action="clear"
+                            >
+                                AC
+                            </button>
+                            <button
+                                type="button"
+                                class="key operator"
+                                data-template="fraction"
+                            >
+                                a⁄b
+                            </button>
+
+                            <button type="button" class="key" data-insert="4">
+                                4
+                            </button>
+                            <button type="button" class="key" data-insert="5">
+                                5
+                            </button>
+                            <button type="button" class="key" data-insert="6">
+                                6
+                            </button>
+                            <button
+                                type="button"
+                                class="key operator"
+                                data-insert="*"
+                            >
+                                ×
+                            </button>
+                            <button
+                                type="button"
+                                class="key operator"
+                                data-insert="-"
+                            >
+                                −
+                            </button>
+                            <button
+                                type="button"
+                                class="key structure"
+                                data-template="mixed"
+                            >
+                                Mixed fraction
+                            </button>
+
+                            <button type="button" class="key" data-insert="1">
+                                1
+                            </button>
+                            <button type="button" class="key" data-insert="2">
+                                2
+                            </button>
+                            <button type="button" class="key" data-insert="3">
+                                3
+                            </button>
+                            <button
+                                type="button"
+                                class="key operator"
+                                data-insert="+"
+                            >
+                                +
+                            </button>
+                            <button
+                                type="button"
+                                class="key operator"
+                                data-insert="="
+                            >
+                                =
+                            </button>
+                            <button
+                                type="button"
+                                class="key structure"
+                                data-template="root"
+                            >
+                                ⁿ√
+                            </button>
+
+                            <button type="button" class="key" data-insert="0">
+                                0
+                            </button>
+                            <button type="button" class="key" data-insert=".">
+                                .
+                            </button>
+                            <button
+                                type="button"
+                                class="key structure"
+                                data-template="sqrt"
+                            >
+                                √
+                            </button>
+                            <button
+                                type="button"
+                                class="key structure"
+                                data-template="power"
+                            >
+                                xⁿ
+                            </button>
+                            <button
+                                type="button"
+                                class="key operator"
+                                data-insert="("
+                            >
+                                (
+                            </button>
+                            <button
+                                type="button"
+                                class="key operator"
+                                data-insert=")"
+                            >
+                                )
+                            </button>
+
+                            <button
+                                type="button"
+                                class="key function"
+                                data-insert="pi"
+                            >
+                                π
+                            </button>
+                            <button
+                                type="button"
+                                class="key function"
+                                data-insert="^"
+                            >
+                                ^
+                            </button>
+                            <button
+                                type="button"
+                                class="key function"
+                                data-insert="abs("
+                            >
+                                abs
+                            </button>
+                            <button
+                                type="button"
+                                class="key function"
+                                data-insert="factor("
+                            >
+                                factor
+                            </button>
+                            <button
+                                type="button"
+                                class="key function"
+                                data-insert="expand("
+                            >
+                                expand
+                            </button>
+                            <button
+                                type="button"
+                                class="key function"
+                                data-insert="simplify("
+                            >
+                                simplify
+                            </button>
+                        </div>
+
+                        <div
+                            id="letter-keypad"
+                            class="keypad letter-keypad"
+                            role="tabpanel"
+                            aria-labelledby="letters-tab"
+                            hidden
+                        ></div>
                     </div>
-
-                    <div id="number-keypad" class="keypad" role="tabpanel" aria-labelledby="numbers-tab">
-                        <button type="button" class="key" data-insert="7">7</button>
-                        <button type="button" class="key" data-insert="8">8</button>
-                        <button type="button" class="key" data-insert="9">9</button>
-                        <button type="button" class="key utility" data-action="backspace">DEL</button>
-                        <button type="button" class="key utility" data-action="clear">AC</button>
-                        <button type="button" class="key operator" data-template="fraction">a⁄b</button>
-
-                        <button type="button" class="key" data-insert="4">4</button>
-                        <button type="button" class="key" data-insert="5">5</button>
-                        <button type="button" class="key" data-insert="6">6</button>
-                        <button type="button" class="key operator" data-insert="*">×</button>
-                        <button type="button" class="key operator" data-insert="-">−</button>
-                        <button type="button" class="key structure" data-template="mixed">Mixed fraction</button>
-
-                        <button type="button" class="key" data-insert="1">1</button>
-                        <button type="button" class="key" data-insert="2">2</button>
-                        <button type="button" class="key" data-insert="3">3</button>
-                        <button type="button" class="key operator" data-insert="+">+</button>
-                        <button type="button" class="key operator" data-insert="=">=</button>
-                        <button type="button" class="key structure" data-template="root">ⁿ√</button>
-
-                        <button type="button" class="key" data-insert="0">0</button>
-                        <button type="button" class="key" data-insert=".">.</button>
-                        <button type="button" class="key structure" data-template="sqrt">√</button>
-                        <button type="button" class="key structure" data-template="power">xⁿ</button>
-                        <button type="button" class="key operator" data-insert="(">(</button>
-                        <button type="button" class="key operator" data-insert=")">)</button>
-
-                        <button type="button" class="key function" data-insert="pi">π</button>
-                        <button type="button" class="key function" data-insert="^">^</button>
-                        <button type="button" class="key function" data-insert="abs(">abs</button>
-                        <button type="button" class="key function" data-insert="factor(">factor</button>
-                        <button type="button" class="key function" data-insert="expand(">expand</button>
-                        <button type="button" class="key function" data-insert="simplify(">simplify</button>
-                    </div>
-
-                    <div id="letter-keypad" class="keypad letter-keypad" role="tabpanel" aria-labelledby="letters-tab" hidden></div>
 
                     <div class="actions-row">
-                        <p class="keyboard-note">Enter starts a new equation line.</p>
+                        <p class="keyboard-note" id="action-hint">
+                            Select a goal to get started.
+                        </p>
                         <div class="action-buttons">
-                            <button class="secondary-button clear-button" id="clear-equations" type="button">
+                            <button
+                                class="secondary-button clear-button"
+                                id="clear-equations"
+                                type="button"
+                            >
                                 Clear
                             </button>
-                            <button class="solve-button" id="solve-equations" type="button">
-                                Solve equations <span aria-hidden="true">→</span>
+                            <button
+                                class="solve-button"
+                                id="solve-equations"
+                                type="button"
+                            >
+                                <span id="solve-button-label">Calculate</span>
+                                <span aria-hidden="true">→</span>
                             </button>
                         </div>
                     </div>
@@ -149,22 +396,37 @@
                     <p class="answer-intro">
                         Exact fractions and radicals are kept in symbolic form.
                     </p>
-                    <p class="answer-status" id="answer-status" role="status" aria-live="polite">
-                        Enter equations and choose Solve.
+                    <p
+                        class="answer-status"
+                        id="answer-status"
+                        role="status"
+                        aria-live="polite"
+                    >
+                        Choose a goal, enter your math, then calculate.
                     </p>
-                    <div class="solutions" id="solutions" aria-live="polite"></div>
+                    <p
+                        class="answer-recommendation"
+                        id="answer-recommendation"
+                        hidden
+                    ></p>
+                    <div
+                        class="solutions"
+                        id="solutions"
+                        aria-live="polite"
+                    ></div>
                     <p class="answer-footnote">
-                        For a system with free variables, those variables are shown
-                        as “Any value”.
+                        Exact fractions and radicals are preserved when
+                        possible.
                     </p>
                 </aside>
             </section>
 
             <p class="page-footnote">
-                Algebra solver supports equations and systems using arithmetic,
-                powers, roots, common logarithms, and common trigonometric
-                functions. Very complex or unsupported equations may not have a
-                closed-form solution.
+                Use Solve all variables for equations, Find the value of an
+                expression to substitute solved values into a formula, or
+                Simplify to expand, factor, collect or simplify brackets. Exact
+                closed forms depend on the equation and supported math
+                operations.
             </p>
         </main>
     </body>

@@ -24,7 +24,8 @@ body {
 }
 
 button,
-textarea {
+textarea,
+select {
     font: inherit;
 }
 
@@ -35,6 +36,10 @@ button {
 :focus-visible {
     outline: 3px solid #65b9e2;
     outline-offset: 3px;
+}
+
+[hidden] {
+    display: none !important;
 }
 
 .site-header {
@@ -158,6 +163,52 @@ h1 {
     padding: 21px;
 }
 
+.goal-picker {
+    margin-bottom: 19px;
+    padding: 14px;
+    border: 1px solid #dceaf1;
+    border-radius: 12px;
+    background: #f7fbfd;
+}
+
+.goal-picker label,
+.field-label,
+.operation-picker label {
+    display: block;
+    margin-bottom: 7px;
+    color: #355a6e;
+    font-size: 12px;
+    font-weight: 750;
+}
+
+.goal-picker select,
+.operation-picker select {
+    width: 100%;
+    min-height: 41px;
+    padding: 0 11px;
+    border: 1px solid #d6e5ec;
+    border-radius: 9px;
+    color: #23475a;
+    background: #fff;
+    font-size: 13px;
+}
+
+.goal-picker p {
+    margin: 7px 0 0;
+    color: #788c97;
+    font-size: 11px;
+    line-height: 1.5;
+}
+
+.mode-input {
+    margin-bottom: 14px;
+}
+
+.operation-picker {
+    max-width: 300px;
+    margin-top: 11px;
+}
+
 .equation-heading,
 .editor-toolbar,
 .actions-row,
@@ -214,7 +265,9 @@ h2 {
     font-size: 16px;
 }
 
-#equations {
+#equations,
+#target-expression,
+#expression-input {
     display: block;
     width: 100%;
     min-height: 142px;
@@ -240,7 +293,9 @@ h2 {
     tab-size: 2;
 }
 
-#equations:focus {
+#equations:focus,
+#target-expression:focus,
+#expression-input:focus {
     border-color: #74b9d9;
     box-shadow: 0 0 0 3px rgba(68, 164, 203, 0.12);
 }
@@ -434,6 +489,45 @@ h2 {
     color: #ad4b47;
 }
 
+.answer-recommendation {
+    margin: -4px 0 12px;
+    padding: 10px 11px;
+    border: 1px solid #f0dfc8;
+    border-radius: 9px;
+    color: #795a2d;
+    background: #fff9ef;
+    font-size: 11px;
+    line-height: 1.55;
+}
+
+.result-card {
+    margin-top: 10px;
+    padding: 13px;
+    border: 1px solid #dcecf2;
+    border-radius: 11px;
+    background: #f7fbfd;
+}
+
+.result-label {
+    margin: 0 0 8px;
+    color: #78909c;
+    font-size: 10px;
+    font-weight: 750;
+    letter-spacing: 0.7px;
+    text-transform: uppercase;
+}
+
+.result-value {
+    margin: 0;
+    overflow-wrap: anywhere;
+    color: #193b4e;
+    font-family: "Cambria Math", "Times New Roman", serif;
+    font-size: 19px;
+    font-weight: 650;
+    line-height: 1.6;
+    white-space: pre-wrap;
+}
+
 .solution-card {
     margin-top: 10px;
     padding: 12px;
@@ -545,7 +639,9 @@ h2 {
         font-size: 10px;
     }
 
-    #equations {
+    #equations,
+    #target-expression,
+    #expression-input {
         min-height: 120px;
         padding: 11px 9px 11px 12px;
         background:

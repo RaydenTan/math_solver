@@ -58,6 +58,12 @@ class BaseAnswer:
     expression: str
 
 
+class AlgebraModeError(ValueError):
+    def __init__(self, message, recommendation):
+        super().__init__(message)
+        self.recommendation = recommendation
+
+
 # ---------------------------------------------------------
 # SYMBOL NORMALISATION
 # Converts calculator symbols into safe Python-AST syntax.
@@ -1353,13 +1359,54 @@ def expression_for_answer(result):
     return sp.sstr(result)
 
 
-def parse_algebra_equation(expression, symbols):
+def validate_algebra_tree(tree, expression_label):
+    if sum(1 for _ in ast.walk(tree)) > MAX_AST_NODES:
+        raise ValueError(f"{expression_label} is too complicated.")
+
+    for node in ast.walk(tree):
+        if (
+            isinstance(node, ast.BinOp)
+            and isinstance(node.op, ast.Pow)
+            and isinstance(node.right, ast.Constant)
+            and isinstance(node.right.value, (int, float))
+            and abs(node.right.value) > MAX_ALGEBRA_EXPONENT
+        ):
+            raise ValueError(
+                f"Algebra exponents cannot be greater than {MAX_ALGEBRA_EXPONENT}."
+            )
+        if isinstance(node, ast.Call):
+            if not isinstance(node.func, ast.Name):
+                raise ValueError("Use only supported math functions.")
+            if node.func.id.lower() not in ALGEBRA_FUNCTIONS:
+                raise ValueError(f"Unsupported algebra function: {node.func.id}.")
+
+
+def algebra_variable_names(tree):
+    function_names = {
+        node.func.id.lower()
+        for node in ast.walk(tree)
+        if isinstance(node, ast.Call) and isinstance(node.func, ast.Name)
+    }
+    return {
+        node.id
+        for node in ast.walk(tree)
+        if isinstance(node, ast.Name)
+        and node.id.lower() not in function_names
+        and node.id.lower() not in {"pi", "tau", "phi"}
+    }
+
+
+def normalise_algebra_expression(expression):
     normalized = normalise_expression(expression)
-    normalized = re.sub(
+    return re.sub(
         r"(\d+(?:\.\d*)?|\.\d+)([A-Za-z])(?![+-]?\d)",
         r"\1*\2",
         normalized,
     )
+
+
+def parse_algebra_equation(expression, symbols):
+    normalized = normalise_algebra_expression(expression)
     if normalized.count("=") > 1 or any(
         operator in normalized for operator in ("<=", ">=", "==", "!=")
     ):
@@ -1368,42 +1415,48 @@ def parse_algebra_equation(expression, symbols):
     sides = [side.strip() for side in normalized.split("=", 1)]
     if len(sides) == 1:
         sides.append("0")
-    if not sides[0].strip() or not sides[1].strip():
+    if not sides[0] or not sides[1]:
         raise ValueError("Enter an expression on both sides of the equals sign.")
 
-    trees = []
-    for side in sides:
-        tree = ast.parse(side, mode="eval")
-        if sum(1 for _ in ast.walk(tree)) > MAX_AST_NODES:
-            raise ValueError("An equation is too complicated.")
-
-        for node in ast.walk(tree):
-            if (
-                isinstance(node, ast.BinOp)
-                and isinstance(node.op, ast.Pow)
-                and isinstance(node.right, ast.Constant)
-                and isinstance(node.right.value, (int, float))
-                and abs(node.right.value) > MAX_ALGEBRA_EXPONENT
-            ):
-                raise ValueError(
-                    f"Algebra exponents cannot be greater than {MAX_ALGEBRA_EXPONENT}."
-                )
-            if isinstance(node, ast.Call):
-                if not isinstance(node.func, ast.Name):
-                    raise ValueError("Use only supported math functions.")
-                if node.func.id.lower() not in ALGEBRA_FUNCTIONS:
-                    raise ValueError(
-                        f"Unsupported algebra function: {node.func.id}."
-                    )
-
-        trees.append(tree)
+    trees = [ast.parse(side, mode="eval") for side in sides]
+    for tree in trees:
+        validate_algebra_tree(tree, "An equation")
 
     left = build_expression(trees[0], "RAD", symbols)
     right = build_expression(trees[1], "RAD", symbols)
     return sp.simplify(left - right)
 
 
-def solve_algebra_system(equations):
+def parse_algebra_expression(expression, known_symbols=None):
+    if not isinstance(expression, str) or not expression.strip():
+        raise ValueError("Enter an expression.")
+    if len(expression) > MAX_ALGEBRA_EXPRESSION_LENGTH:
+        raise ValueError(
+            f"An expression must be {MAX_ALGEBRA_EXPRESSION_LENGTH} characters or fewer."
+        )
+
+    normalized = normalise_algebra_expression(expression.strip())
+    if "=" in normalized:
+        raise ValueError(
+            "This mode expects an expression, not an equation. "
+            "Choose Solve all variables or Find an expression from a system."
+        )
+
+    tree = ast.parse(normalized, mode="eval")
+    validate_algebra_tree(tree, "The expression")
+
+    symbols = dict(known_symbols or {})
+    for name in algebra_variable_names(tree):
+        symbols.setdefault(name, sp.Symbol(name))
+    if len(symbols) > MAX_ALGEBRA_VARIABLES:
+        raise ValueError(
+            f"Use at most {MAX_ALGEBRA_VARIABLES} variables in one expression."
+        )
+
+    return build_expression(tree, "RAD", symbols), symbols
+
+
+def parse_algebra_system(equations):
     if not isinstance(equations, list):
         raise ValueError("Send equations as a list of expression lines.")
 
@@ -1429,12 +1482,7 @@ def solve_algebra_system(equations):
 
     parsed_trees = []
     for equation in cleaned_equations:
-        normalized = normalise_expression(equation)
-        normalized = re.sub(
-            r"(\d+(?:\.\d*)?|\.\d+)([A-Za-z])(?![+-]?\d)",
-            r"\1*\2",
-            normalized,
-        )
+        normalized = normalise_algebra_expression(equation)
         if normalized.count("=") > 1:
             raise ValueError("Use one equals sign (=) for each equation.")
         sides = [side.strip() for side in normalized.split("=", 1)]
@@ -1444,24 +1492,9 @@ def solve_algebra_system(equations):
             raise ValueError("Enter an expression on both sides of the equals sign.")
         parsed_trees.extend(ast.parse(side, mode="eval") for side in sides)
 
-    function_names = {
-        node.func.id.lower()
-        for tree in parsed_trees
-        for node in ast.walk(tree)
-        if isinstance(node, ast.Call) and isinstance(node.func, ast.Name)
-    }
-    variable_names = {
-        node.id
-        for tree in parsed_trees
-        for node in ast.walk(tree)
-        if isinstance(node, ast.Name)
-        and node.id.lower() not in function_names
-    }
-    variable_names = {
-        name
-        for name in variable_names
-        if name.lower() not in {"pi", "tau", "phi"}
-    }
+    variable_names = set().union(
+        *(algebra_variable_names(tree) for tree in parsed_trees)
+    )
     if len(variable_names) > MAX_ALGEBRA_VARIABLES:
         raise ValueError(
             f"Solve at most {MAX_ALGEBRA_VARIABLES} variables at a time."
@@ -1479,6 +1512,37 @@ def solve_algebra_system(equations):
     variables = [symbols[name] for name in sorted(symbols)]
     nontrivial_relations = [relation for relation in relations if relation != 0]
 
+    return symbols, variables, relations, nontrivial_relations
+
+
+def algebra_solution_maps(variables, nontrivial_relations):
+    if not nontrivial_relations:
+        return "identity", []
+
+    if not variables:
+        return "finite", []
+
+    if len(variables) == 1 and len(nontrivial_relations) == 1:
+        solution_set = sp.solveset(
+            nontrivial_relations[0],
+            variables[0],
+            domain=sp.S.Complexes,
+        )
+        if solution_set == sp.S.EmptySet:
+            return "finite", []
+        if isinstance(solution_set, sp.FiniteSet):
+            return "finite", [
+                {variables[0]: value}
+                for value in solution_set
+            ]
+        return "set", solution_set
+
+    return "finite", sp.solve(nontrivial_relations, variables, dict=True)
+
+
+def solve_algebra_system(equations):
+    symbols, variables, relations, nontrivial_relations = parse_algebra_system(equations)
+
     if not nontrivial_relations:
         return {
             "status": "Every value of the listed variables satisfies these identities.",
@@ -1495,37 +1559,28 @@ def solve_algebra_system(equations):
             "infinitely_many": not any(relation != 0 for relation in relations),
         }
 
-    if len(variables) == 1 and len(nontrivial_relations) == 1:
-        variable = variables[0]
-        solution_set = sp.solveset(
-            nontrivial_relations[0],
-            variable,
-            domain=sp.S.Complexes,
-        )
-        if solution_set == sp.S.EmptySet:
-            solutions = []
-        elif isinstance(solution_set, sp.FiniteSet):
-            solutions = [{variable: value} for value in solution_set]
-        else:
-            return {
-                "status": "Returned the complete symbolic solution set.",
-                "variables": sorted(symbols),
-                "solution_set": True,
-                "solutions": [{
-                    "assignments": [{
-                        "variable": str(variable),
-                        "value": sp.pretty(
-                            solution_set,
-                            use_unicode=True,
-                            wrap_line=False,
-                        ),
-                        "free": False,
-                    }],
+    solution_kind, solutions = algebra_solution_maps(
+        variables,
+        nontrivial_relations,
+    )
+    if solution_kind == "set":
+        return {
+            "status": "Returned the complete symbolic solution set.",
+            "variables": sorted(symbols),
+            "solution_set": True,
+            "solutions": [{
+                "assignments": [{
+                    "variable": str(variables[0]),
+                    "value": sp.pretty(
+                        solutions,
+                        use_unicode=True,
+                        wrap_line=False,
+                    ),
+                    "free": False,
                 }],
-                "infinitely_many": False,
-            }
-    else:
-        solutions = sp.solve(nontrivial_relations, variables, dict=True)
+            }],
+            "infinitely_many": False,
+        }
 
     if not solutions:
         return {
@@ -1556,6 +1611,84 @@ def solve_algebra_system(equations):
         "variables": sorted(symbols),
         "solutions": formatted_solutions,
         "infinitely_many": False,
+    }
+
+
+def evaluate_algebra_expression(equations, expression):
+    symbols, variables, relations, nontrivial_relations = parse_algebra_system(equations)
+    target, expression_symbols = parse_algebra_expression(expression, symbols)
+    solution_kind, solutions = algebra_solution_maps(
+        variables,
+        nontrivial_relations,
+    )
+
+    if solution_kind == "identity":
+        values = [sp.simplify(target)]
+    elif solution_kind == "set":
+        parameter = sp.Dummy(str(variables[0]))
+        value_set = sp.imageset(
+            sp.Lambda(parameter, target.subs(variables[0], parameter)),
+            solutions,
+        )
+        values = [value_set]
+    elif not solutions:
+        raise AlgebraModeError(
+            "The equations have no solution, so the expression cannot be evaluated.",
+            "Choose “Solve all variables” to inspect the system, or correct the equations.",
+        )
+    else:
+        values = []
+        seen_values = set()
+        for solution in solutions:
+            value = sp.simplify(target.subs(solution, simultaneous=True))
+            if value not in seen_values:
+                seen_values.add(value)
+                values.append(value)
+
+    formatted_values = [
+        {
+            "value": sp.pretty(value, use_unicode=True, wrap_line=False),
+            "free_variables": sorted(str(symbol) for symbol in value.free_symbols),
+        }
+        for value in values
+    ]
+
+    return {
+        "status": (
+            f"Found {len(formatted_values)} possible value(s) for the expression."
+        ),
+        "expression": sp.pretty(target, use_unicode=True, wrap_line=False),
+        "values": formatted_values,
+        "variables": sorted(str(symbol) for symbol in expression_symbols.values()),
+    }
+
+
+def simplify_algebra_expression(expression, operation="simplify"):
+    value, symbols = parse_algebra_expression(expression)
+    if operation == "simplify":
+        result = sp.simplify(value)
+    elif operation == "expand":
+        result = sp.expand(value)
+    elif operation == "factor":
+        result = sp.factor(value)
+    elif operation == "collect":
+        variables = sorted(value.free_symbols, key=str)
+        result = value
+        for variable in variables:
+            result = sp.collect(result, variable)
+    else:
+        raise ValueError("Choose simplify, expand, factor, or collect.")
+
+    return {
+        "status": {
+            "simplify": "Expression simplified.",
+            "expand": "Brackets expanded.",
+            "factor": "Expression factored.",
+            "collect": "Like terms collected.",
+        }[operation],
+        "operation": operation,
+        "result": sp.pretty(result, use_unicode=True, wrap_line=False),
+        "variables": sorted(str(symbol) for symbol in symbols.values()),
     }
 
 
@@ -1626,9 +1759,37 @@ def algebra_script():
 def algebra_solve():
     data = request.get_json(silent=True) or {}
     if not isinstance(data, dict):
-        return jsonify({"error": "Send equations as a JSON object."}), 400
+        return jsonify({
+            "error": "Send your algebra request as a JSON object.",
+            "recommendation": "Choose a goal, then enter the matching expression or equations.",
+        }), 400
+
+    mode = data.get("mode")
+    if not isinstance(mode, str) or mode not in {"solve", "evaluate", "simplify"}:
+        return jsonify({
+            "error": "Please select what you want to find.",
+            "recommendation": "Choose solve variables, evaluate an expression, or simplify an expression.",
+        }), 400
+
     try:
-        return jsonify(solve_algebra_system(data.get("equations")))
+        if mode == "solve":
+            result = solve_algebra_system(data.get("equations"))
+        elif mode == "evaluate":
+            result = evaluate_algebra_expression(
+                data.get("equations"),
+                data.get("expression"),
+            )
+        else:
+            result = simplify_algebra_expression(
+                data.get("expression"),
+                data.get("operation", "simplify"),
+            )
+        return jsonify(result)
+    except AlgebraModeError as error:
+        return jsonify({
+            "error": str(error),
+            "recommendation": error.recommendation,
+        }), 400
     except (
         SyntaxError,
         ValueError,
@@ -1638,7 +1799,15 @@ def algebra_solve():
         ZeroDivisionError,
         sp.PolynomialError,
     ) as error:
-        return jsonify({"error": str(error)}), 400
+        recommendation = {
+            "solve": "Check the equation lines. If you only want to simplify one expression, choose “Simplify expression”.",
+            "evaluate": "Enter a valid equation system and a separate expression. Choose “Solve all variables” if you want the variable assignments.",
+            "simplify": "Enter one expression without an equals sign. Choose a solve goal if you entered equations.",
+        }[mode]
+        return jsonify({
+            "error": str(error),
+            "recommendation": recommendation,
+        }), 400
 
 
 @app.route("/scientific-calculator")

@@ -66,7 +66,10 @@ class CalculatorTests(unittest.TestCase):
 
         system_response = self.client.post(
             "/algebra/solve",
-            json={"equations": ["2x + y = 7", "", "x - y = 2"]},
+            json={
+                "mode": "solve",
+                "equations": ["2x + y = 7", "", "x - y = 2"],
+            },
         )
         self.assertEqual(system_response.status_code, 200)
         assignments = system_response.get_json()["solutions"][0]["assignments"]
@@ -78,7 +81,7 @@ class CalculatorTests(unittest.TestCase):
 
         radical_response = self.client.post(
             "/algebra/solve",
-            json={"equations": ["x^2 = 2"]},
+            json={"mode": "solve", "equations": ["x^2 = 2"]},
         )
         self.assertEqual(radical_response.status_code, 200)
         values = {
@@ -90,7 +93,7 @@ class CalculatorTests(unittest.TestCase):
 
         periodic_response = self.client.post(
             "/algebra/solve",
-            json={"equations": ["sin(x) = 0"]},
+            json={"mode": "solve", "equations": ["sin(x) = 0"]},
         )
         self.assertEqual(periodic_response.status_code, 200)
         periodic_result = periodic_response.get_json()
@@ -103,7 +106,7 @@ class CalculatorTests(unittest.TestCase):
 
         fraction_response = self.client.post(
             "/algebra/solve",
-            json={"equations": ["x / 2 = 1 / 3"]},
+            json={"mode": "solve", "equations": ["x / 2 = 1 / 3"]},
         )
         self.assertEqual(fraction_response.status_code, 200)
         fraction_value = fraction_response.get_json()["solutions"][0]["assignments"][0]["value"]
@@ -113,11 +116,105 @@ class CalculatorTests(unittest.TestCase):
     def test_algebra_solver_rejects_unsupported_functions(self):
         response = self.client.post(
             "/algebra/solve",
-            json={"equations": ["__import__('os')"]},
+            json={"mode": "solve", "equations": ["__import__('os')"]},
         )
         self.assertEqual(response.status_code, 400)
         self.assertIn("Unsupported algebra function", response.get_json()["error"])
         response.close()
+
+    def test_algebra_goal_is_required_and_recommended(self):
+        response = self.client.post(
+            "/algebra/solve",
+            json={"equations": ["x + 1 = 2"]},
+        )
+
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(
+            response.get_json()["error"],
+            "Please select what you want to find.",
+        )
+        self.assertIn("Choose solve variables", response.get_json()["recommendation"])
+        response.close()
+
+    def test_algebra_can_evaluate_an_expression_from_a_system(self):
+        response = self.client.post(
+            "/algebra/solve",
+            json={
+                "mode": "evaluate",
+                "equations": ["x + y = 5", "x - y = 1"],
+                "expression": "x^2 + y^2",
+            },
+        )
+
+        self.assertEqual(response.status_code, 200, response.get_json())
+        self.assertEqual(response.get_json()["values"], [{
+            "value": "13",
+            "free_variables": [],
+        }])
+        response.close()
+
+        multiple_values = self.client.post(
+            "/algebra/solve",
+            json={
+                "mode": "evaluate",
+                "equations": ["x^2 = 2"],
+                "expression": "x",
+            },
+        )
+        self.assertEqual(multiple_values.status_code, 200)
+        self.assertEqual(
+            {item["value"] for item in multiple_values.get_json()["values"]},
+            {"√2", "-√2"},
+        )
+        multiple_values.close()
+
+    def test_algebra_can_simplify_expand_factor_and_collect(self):
+        response = self.client.post(
+            "/algebra/solve",
+            json={
+                "mode": "simplify",
+                "operation": "expand",
+                "expression": "(x + 1)(x + 2)",
+            },
+        )
+
+        self.assertEqual(response.status_code, 200, response.get_json())
+        self.assertEqual(response.get_json()["status"], "Brackets expanded.")
+        self.assertIn("3⋅x", response.get_json()["result"])
+        response.close()
+
+        cases = [
+            ("simplify", "(x + x)/2", "Expression simplified.", "x"),
+            ("factor", "x^2 - 1", "Expression factored.", "x - 1"),
+            ("collect", "x*y + x*z + y*x", "Like terms collected.", "2⋅y + z"),
+            ("collect", "7", "Like terms collected.", "7"),
+        ]
+        for operation, expression, expected_status, expected_result in cases:
+            with self.subTest(operation=operation, expression=expression):
+                result = self.client.post(
+                    "/algebra/solve",
+                    json={
+                        "mode": "simplify",
+                        "operation": operation,
+                        "expression": expression,
+                    },
+                )
+                self.assertEqual(result.status_code, 200, result.get_json())
+                self.assertEqual(result.get_json()["status"], expected_status)
+                self.assertIn(expected_result, result.get_json()["result"])
+                result.close()
+
+        wrong_mode = self.client.post(
+            "/algebra/solve",
+            json={
+                "mode": "simplify",
+                "expression": "x = 2",
+            },
+        )
+        self.assertEqual(wrong_mode.status_code, 400)
+        self.assertIn("Choose Solve all variables", wrong_mode.get_json()["error"])
+        self.assertIn("equations", wrong_mode.get_json()["recommendation"])
+        wrong_mode.close()
 
     def calculate(self, expression, angle="DEG"):
         response = self.client.post(
