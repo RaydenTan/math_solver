@@ -736,7 +736,29 @@ h1 {
         padding: 22px;
     }
 
+    .expression-section {
+        display: flex;
+        flex: 1 1 0;
+        flex-direction: column;
+        min-height: 130px;
+        margin-bottom: 8px;
+    }
+
+    .expression-editor {
+        flex: 1 1 auto;
+        height: auto;
+        min-height: 90px;
+        max-height: none;
+    }
+
+    .answer-panel {
+        flex: 0.6 1 0;
+        min-height: 72px;
+        margin: 8px 0;
+    }
+
     .keypad {
+        flex: 1.8 1 0;
         grid-template-columns: minmax(0, 1fr);
         grid-template-rows: repeat(2, minmax(0, 1fr));
         gap: 7px;
@@ -750,6 +772,17 @@ h1 {
 
     .category-panel {
         grid-template-rows: repeat(3, minmax(0, 1fr));
+    }
+
+    .key {
+        padding: 2px;
+        border-radius: 7px;
+        font-size: 12px;
+    }
+
+    .key.function,
+    .category-key {
+        font-size: 10px;
     }
 }
 
@@ -795,7 +828,10 @@ h1 {
     }
 
     .expression-section {
-        flex: none;
+        display: flex;
+        flex: 1 1 0;
+        flex-direction: column;
+        min-height: 105px;
         margin-bottom: 4px;
     }
 
@@ -814,17 +850,17 @@ h1 {
     }
 
     .expression-editor {
-        height: clamp(54px, 9dvh, 76px);
-        min-height: 54px;
-        max-height: 76px;
+        flex: 1 1 auto;
+        height: auto;
+        min-height: 60px;
+        max-height: none;
         padding: 8px;
         font-size: clamp(18px, 4.5vw, 22px);
     }
 
     .answer-panel {
-        flex: none;
-        height: clamp(48px, 8dvh, 64px);
-        min-height: 0;
+        flex: 0.6 1 0;
+        min-height: 58px;
         margin: 4px 0;
         padding: 5px 8px;
     }
@@ -841,8 +877,10 @@ h1 {
 
     .keypad {
         display: grid;
+        flex: 1.7 1 0;
         grid-template-columns: minmax(0, 1fr);
         grid-template-rows: repeat(2, minmax(0, 1fr));
+        min-height: 0;
         gap: clamp(3px, 0.8dvh, 6px);
     }
 
@@ -857,18 +895,18 @@ h1 {
 
     .key {
         min-height: 0;
-        padding: 2px 1px;
-        font-size: clamp(9px, 2.7vw, 13px);
-        border-radius: 8px;
+        padding: 1px;
+        font-size: clamp(9px, 2.4vw, 11px);
+        border-radius: 7px;
     }
 
     .key.function {
-        font-size: clamp(8px, 2.2vw, 11px);
+        font-size: clamp(8px, 2vw, 10px);
     }
 
     .category-key {
         min-height: 0;
-        font-size: clamp(9px, 2.7vw, 13px);
+        font-size: clamp(8px, 2.2vw, 11px);
     }
 
     .key-secondary {
@@ -940,15 +978,16 @@ h1 {
     }
 
     .expression-editor {
-        height: 34px;
-        min-height: 34px;
-        max-height: 34px;
-        padding: 3px 8px;
-        font-size: 17px;
+        height: 42px;
+        min-height: 42px;
+        max-height: 42px;
+        padding: 4px 8px;
+        font-size: 18px;
     }
 
     .answer-panel {
-        height: 36px;
+        flex: none;
+        height: 44px;
         min-height: 0;
         margin: 2px 0;
         padding: 2px 8px;

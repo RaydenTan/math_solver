@@ -81,6 +81,14 @@ const formatOrder = [
 
 editor.contentEditable = "true";
 editor.spellcheck = false;
+editor.setAttribute("inputmode", "none");
+editor.setAttribute("virtualkeyboardpolicy", "manual");
+
+editor.addEventListener("focusin", () => {
+    if (navigator.virtualKeyboard) {
+        navigator.virtualKeyboard.hide();
+    }
+});
 
 function showPlaceholder() {
     if (
@@ -133,6 +141,8 @@ function createSlot(name, placeholder = name) {
     slot.className = "math-slot";
     slot.contentEditable = "true";
     slot.setAttribute("aria-label", `${placeholder} slot`);
+    slot.setAttribute("inputmode", "none");
+    slot.setAttribute("virtualkeyboardpolicy", "manual");
 
     slot.dataset.slot = name;
     slot.dataset.placeholder = placeholder;

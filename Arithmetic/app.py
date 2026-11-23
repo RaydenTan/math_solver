@@ -1352,6 +1352,11 @@ def home_script():
     return send_file(PROJECT_ROOT / "script.js", mimetype="application/javascript")
 
 
+@app.route("/icon.png")
+def site_icon():
+    return send_file(PROJECT_ROOT / "icon.png", mimetype="image/png")
+
+
 @app.route("/scientific-calculator")
 def scientific_calculator():
     return render_template("calculator.html")

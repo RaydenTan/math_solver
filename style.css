@@ -1,11 +1,11 @@
 :root {
     color-scheme: light;
-    --ink: #172321;
-    --muted: #65726f;
-    --green: #165f4a;
-    --green-dark: #104737;
-    --canvas: #f7f8f4;
-    --line: #e5e9e3;
+    --ink: #142b3b;
+    --muted: #607786;
+    --ocean: #126e9d;
+    --ocean-deep: #0b5077;
+    --canvas: #f3f9fc;
+    --line: #dce9f0;
     font-family: "Segoe UI", sans-serif;
 }
 
@@ -14,7 +14,7 @@
 }
 
 *:focus-visible {
-    outline: 3px solid #78a98b;
+    outline: 3px solid #69bce5;
     outline-offset: 3px;
 }
 
@@ -33,7 +33,7 @@ a {
     position: relative;
     z-index: 5;
     background: rgba(255, 255, 255, 0.9);
-    border-bottom: 1px solid rgba(229, 233, 227, 0.8);
+    border-bottom: 1px solid rgba(220, 233, 240, 0.9);
 }
 
 .header-inner {
@@ -62,15 +62,14 @@ a {
     width: 34px;
     height: 34px;
     place-items: center;
-    color: #fff;
-    background: var(--green);
+    padding: 2px;
+    background: #e2f5fc;
     border-radius: 11px;
-    font-family: Georgia, serif;
-    font-size: 22px;
+    object-fit: contain;
 }
 
 .brand-plus {
-    color: #278267;
+    color: var(--ocean);
 }
 
 .primary-navigation {
@@ -89,7 +88,7 @@ a {
     gap: 8px;
     padding: 11px 12px;
     border-radius: 9px;
-    color: #46534f;
+    color: #425c6c;
     font-size: 13px;
     font-weight: 600;
     list-style: none;
@@ -113,8 +112,8 @@ a {
 
 .nav-dropdown[open] summary,
 .nav-dropdown summary:hover {
-    color: var(--green);
-    background: #f1f5f0;
+    color: var(--ocean);
+    background: #edf7fb;
 }
 
 .nav-dropdown[open] summary::after {
@@ -130,7 +129,7 @@ a {
     border: 1px solid var(--line);
     border-radius: 12px;
     background: #fff;
-    box-shadow: 0 14px 35px rgba(24, 45, 37, 0.12);
+    box-shadow: 0 14px 35px rgba(24, 67, 91, 0.12);
 }
 
 .dropdown-menu a,
@@ -138,14 +137,14 @@ a {
     display: block;
     padding: 11px 12px;
     border-radius: 7px;
-    color: #53615c;
+    color: #4c6574;
     font-size: 13px;
     font-weight: 500;
 }
 
 .dropdown-menu a:hover {
-    color: var(--green);
-    background: #f1f5f0;
+    color: var(--ocean);
+    background: #edf7fb;
 }
 
 .dropdown-menu span {
@@ -168,8 +167,8 @@ a {
     overflow: hidden;
     border-radius: 0 0 30px 30px;
     background:
-        radial-gradient(ellipse at 86% 20%, rgba(216, 236, 220, 0.75), transparent 34%),
-        linear-gradient(115deg, #f1f5ed 5%, #e8f0e7 100%);
+        radial-gradient(ellipse at 86% 20%, rgba(164, 222, 243, 0.62), transparent 34%),
+        linear-gradient(115deg, #eaf8fd 5%, #d9f0fa 100%);
 }
 
 .intro-copy {
@@ -180,7 +179,7 @@ a {
 
 .eyebrow {
     margin: 0 0 16px;
-    color: #537365;
+    color: #39738f;
     font-size: 10px;
     font-weight: 700;
     letter-spacing: 1.65px;
@@ -196,8 +195,8 @@ a {
     width: 7px;
     height: 7px;
     border-radius: 50%;
-    background: #65a282;
-    box-shadow: 0 0 0 4px rgba(101, 162, 130, 0.14);
+    background: #40a5d0;
+    box-shadow: 0 0 0 4px rgba(64, 165, 208, 0.15);
 }
 
 h1,
@@ -222,13 +221,13 @@ h1 {
 }
 
 h1 span {
-    color: var(--green);
+    color: var(--ocean);
 }
 
 .intro-text {
     max-width: 415px;
     margin-bottom: 27px;
-    color: #687671;
+    color: #617987;
     font-size: 15px;
     line-height: 1.75;
 }
@@ -241,15 +240,15 @@ h1 span {
     padding: 0 18px;
     border-radius: 10px;
     color: #fff;
-    background: var(--green);
-    box-shadow: 0 7px 17px rgba(22, 95, 74, 0.16);
+    background: var(--ocean);
+    box-shadow: 0 7px 17px rgba(18, 110, 157, 0.2);
     font-size: 13px;
     font-weight: 700;
     transition: transform 160ms ease, background 160ms ease;
 }
 
 .primary-button:hover {
-    background: var(--green-dark);
+    background: var(--ocean-deep);
     transform: translateY(-2px);
 }
 
@@ -271,7 +270,7 @@ h1 span {
     left: 50%;
     width: 222px;
     height: 222px;
-    border: 1px solid rgba(53, 114, 84, 0.19);
+    border: 1px solid rgba(32, 113, 154, 0.22);
     border-radius: 50%;
     transform: translate(-50%, -50%);
 }
@@ -280,7 +279,7 @@ h1 span {
     width: 282px;
     height: 282px;
     border-style: dashed;
-    border-color: rgba(53, 114, 84, 0.18);
+    border-color: rgba(32, 113, 154, 0.2);
 }
 
 .art-center {
@@ -294,8 +293,8 @@ h1 span {
     border: 1px solid rgba(255, 255, 255, 0.7);
     border-radius: 31px;
     color: #fff;
-    background: linear-gradient(145deg, #317f5d, #165f4a);
-    box-shadow: 0 18px 37px rgba(32, 90, 62, 0.23);
+    background: linear-gradient(145deg, #43b2df, #126e9d);
+    box-shadow: 0 18px 37px rgba(18, 93, 132, 0.24);
     font-family: Georgia, serif;
     font-size: 53px;
     transform: translate(-50%, -50%) rotate(-7deg);
@@ -306,11 +305,11 @@ h1 span {
     z-index: 1;
     display: block;
     padding: 11px 14px;
-    border: 1px solid rgba(233, 239, 230, 0.9);
+    border: 1px solid rgba(226, 241, 247, 0.95);
     border-radius: 11px;
-    color: #315a46;
+    color: #285d78;
     background: rgba(255, 255, 255, 0.88);
-    box-shadow: 0 7px 18px rgba(49, 89, 66, 0.08);
+    box-shadow: 0 7px 18px rgba(42, 98, 125, 0.1);
     font-family: Georgia, serif;
     font-size: 15px;
 }
@@ -335,7 +334,7 @@ h1 span {
 
 .art-star {
     position: absolute;
-    color: #d29d49;
+    color: #e1a94b;
     font-size: 22px;
 }
 
@@ -347,7 +346,7 @@ h1 span {
 .star-two {
     bottom: 61px;
     left: 0;
-    color: #6b9b78;
+    color: #56a8c9;
     font-size: 14px;
 }
 
@@ -355,7 +354,7 @@ h1 span {
     position: absolute;
     top: 35px;
     left: 37px;
-    color: rgba(83, 115, 101, 0.3);
+    color: rgba(57, 115, 143, 0.32);
     font-family: Georgia, serif;
     font-size: 21px;
 }
@@ -413,7 +412,7 @@ h2 {
 }
 
 .tool-card:hover {
-    box-shadow: 0 12px 30px rgba(24, 45, 37, 0.07);
+    box-shadow: 0 12px 30px rgba(24, 67, 91, 0.08);
     transform: translateY(-3px);
 }
 
@@ -430,30 +429,31 @@ h2 {
     height: 38px;
     place-items: center;
     border-radius: 12px;
-    color: #287355;
-    background: #eaf3ec;
+    color: #176f98;
+    background: #e4f4fa;
     font-family: "Segoe UI", sans-serif;
     font-size: 20px;
     font-weight: 700;
 }
 
 .algebra-card .tool-icon {
-    color: #7354a4;
-    background: #f1ecf8;
+    color: #3a78a8;
+    background: #e8f1fa;
 }
 
 .geometry-card .tool-icon {
-    color: #ad7434;
-    background: #f8f0e3;
+    color: #287ca4;
+    background: #e4f3f8;
 }
 
 .graphs-card .tool-icon {
-    background: #eaf0fa;
+    color: #2b79a5;
+    background: #e6f1fa;
 }
 
 .converter-card .tool-icon {
-    color: #a45b72;
-    background: #f8edf1;
+    color: #3975a0;
+    background: #eaf1f8;
 }
 
 .bar-icon {
@@ -468,7 +468,7 @@ h2 {
     display: block;
     width: 4px;
     border-radius: 2px 2px 0 0;
-    background: #587eb1;
+    background: #438fc0;
 }
 
 .bar-icon i:nth-child(1) {
@@ -506,7 +506,7 @@ h2 {
 
 .card-link,
 .coming-soon {
-    color: var(--green);
+    color: var(--ocean);
     font-size: 11px;
     font-weight: 700;
 }
@@ -518,7 +518,7 @@ h2 {
 }
 
 .card-link:hover {
-    color: var(--green-dark);
+    color: var(--ocean-deep);
 }
 
 .card-link span {
@@ -529,8 +529,8 @@ h2 {
     display: inline-block;
     padding: 6px 9px;
     border-radius: 6px;
-    color: #7d8983;
-    background: #f2f4f1;
+    color: #6c8492;
+    background: #eef5f8;
     font-weight: 600;
 }
 
@@ -553,7 +553,6 @@ h2 {
     width: 29px;
     height: 29px;
     border-radius: 9px;
-    font-size: 19px;
 }
 
 .site-footer p,
@@ -565,7 +564,7 @@ h2 {
 
 .footer-note span {
     margin-left: 4px;
-    color: #5e9271;
+    color: #399ac4;
 }
 
 @media (min-width: 1500px) {
@@ -646,7 +645,7 @@ h2 {
         width: 17px;
         height: 2px;
         border-radius: 2px;
-        background: #3c5148;
+        background: #3d6479;
         transition: transform 160ms ease, opacity 160ms ease;
     }
 
@@ -673,7 +672,7 @@ h2 {
         border: 1px solid var(--line);
         border-radius: 0 0 14px 14px;
         background: #fff;
-        box-shadow: 0 16px 25px rgba(24, 45, 37, 0.1);
+        box-shadow: 0 16px 25px rgba(24, 67, 91, 0.12);
     }
 
     .primary-navigation.is-open {
@@ -692,7 +691,7 @@ h2 {
         min-width: 0;
         margin: 0 5px 5px;
         border: 0;
-        background: #f7f8f4;
+        background: #f3f9fc;
         box-shadow: none;
     }
 

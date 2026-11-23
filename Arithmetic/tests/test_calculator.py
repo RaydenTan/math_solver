@@ -19,10 +19,13 @@ class CalculatorTests(unittest.TestCase):
 
         stylesheet_response = self.client.get("/style.css")
         script_response = self.client.get("/script.js")
+        icon_response = self.client.get("/icon.png")
         self.assertEqual(stylesheet_response.status_code, 200)
         self.assertEqual(script_response.status_code, 200)
+        self.assertEqual(icon_response.status_code, 200)
         stylesheet_response.close()
         script_response.close()
+        icon_response.close()
 
         calculator_response = self.client.get("/scientific-calculator")
         self.assertEqual(calculator_response.status_code, 200)
