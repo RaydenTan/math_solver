@@ -119,6 +119,19 @@ h1 {
     letter-spacing: -1.8px;
 }
 
+.page-version {
+    display: inline-block;
+    padding: 5px 9px;
+    border-radius: 999px;
+    color: #176f98;
+    background: #e4f4fa;
+    font-family: "Segoe UI", Arial, sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0;
+    vertical-align: middle;
+}
+
 .intro {
     max-width: 610px;
     margin-bottom: 0;

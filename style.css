@@ -72,6 +72,24 @@ a {
     color: var(--ocean);
 }
 
+.brand-version,
+.tool-version {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 7px;
+    border-radius: 999px;
+    color: #176f98;
+    background: #e8f6fb;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0;
+    line-height: 1;
+}
+
+.brand-version {
+    margin-left: -4px;
+}
+
 .primary-navigation {
     display: flex;
     align-items: center;
@@ -494,6 +512,16 @@ h2 {
     margin-bottom: 7px;
     font-size: 17px;
     letter-spacing: -0.3px;
+}
+
+.tool-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.tool-title .tool-version {
+    flex-shrink: 0;
 }
 
 .tool-card p {
