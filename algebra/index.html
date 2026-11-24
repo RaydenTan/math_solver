@@ -7,7 +7,7 @@
             name="description"
             content="Solve equations and systems of equations with Math Solver++ Algebra."
         />
-        <title>Algebra Solver v1.5 | Math Solver++</title>
+        <title>Algebra Solver v1.8 | Math Solver++</title>
         <link rel="icon" type="image/png" href="../icon.png" />
         <link rel="stylesheet" href="style.css" />
         <script src="script.js" defer></script>
@@ -26,7 +26,7 @@
         <main class="page-shell">
             <section class="page-heading">
                 <p class="eyebrow">MATH SOLVER++ TOOLKIT</p>
-                <h1>Algebra solver <span class="page-version">v1.5</span></h1>
+                <h1>Algebra solver <span class="page-version">v1.8</span></h1>
                 <p class="intro">
                     Choose what you want to do: solve for variables, evaluate an
                     expression from a system, or simplify an expression.
@@ -87,9 +87,27 @@
                             aria-describedby="equation-help"
                         ></textarea>
                         <p class="field-help" id="equation-help">
-                            Example: 2x + y = 7 on line 1, then x - y = 2 on
-                            line 2.
+                            Each equation line gets its own colored curve.
+                            Example: 2x + y = 7, then x - y = 2.
                         </p>
+                        <div class="graph-examples">
+                            <label for="graph-example">Try a graph shape</label>
+                            <select id="graph-example">
+                                <option value="">Choose an example...</option>
+                                <option value="circle">Circle</option>
+                                <option value="ellipse">Ellipse</option>
+                                <option value="parabola">Parabola</option>
+                                <option value="hyperbola">Hyperbola</option>
+                                <option value="lines">Multiple lines</option>
+                            </select>
+                            <button
+                                class="secondary-button"
+                                id="load-graph-example"
+                                type="button"
+                            >
+                                Load and graph
+                            </button>
+                        </div>
                     </section>
 
                     <section class="mode-input" id="target-input" hidden>
@@ -367,6 +385,15 @@
                         </p>
                         <div class="action-buttons">
                             <button
+                                class="secondary-button"
+                                id="graph-algebra"
+                                type="button"
+                                aria-expanded="false"
+                                aria-controls="algebra-graph"
+                            >
+                                Show algebra graph
+                            </button>
+                            <button
                                 class="secondary-button clear-button"
                                 id="clear-equations"
                                 type="button"
@@ -419,6 +446,54 @@
                         possible.
                     </p>
                 </aside>
+            </section>
+
+            <section
+                class="algebra-graph-card"
+                id="algebra-graph"
+                aria-labelledby="graph-heading"
+                hidden
+            >
+                <div class="graph-heading">
+                    <div>
+                        <p class="eyebrow">VISUALISE THE EQUATIONS</p>
+                        <h2 id="graph-heading">Algebra graph</h2>
+                    </div>
+                    <div class="graph-heading-actions">
+                        <button
+                            class="secondary-button"
+                            id="download-algebra-graph"
+                            type="button"
+                            disabled
+                        >
+                            Save as PNG
+                        </button>
+                        <button
+                            class="secondary-button"
+                            id="close-algebra-graph"
+                            type="button"
+                        >
+                            Hide graph
+                        </button>
+                    </div>
+                </div>
+                <p class="graph-description" id="algebra-graph-description">
+                    Curves show where each equation equals zero; shared points are solutions.
+                </p>
+                <p
+                    class="graph-status"
+                    id="algebra-graph-status"
+                    role="status"
+                    aria-live="polite"
+                ></p>
+                <svg
+                    class="algebra-graph-svg"
+                    id="algebra-graph-svg"
+                    viewBox="0 0 800 520"
+                    role="img"
+                    aria-labelledby="graph-heading"
+                ></svg>
+                <div class="graph-legend" id="algebra-graph-legend"></div>
             </section>
 
             <p class="page-footnote">

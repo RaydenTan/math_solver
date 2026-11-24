@@ -261,6 +261,11 @@ h2 {
     background: #f3fafe;
 }
 
+.secondary-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
 .secondary-button span {
     font-size: 16px;
 }
@@ -302,6 +307,31 @@ h2 {
 
 .field-help {
     margin: 7px 2px 15px;
+}
+
+.graph-examples {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: -4px 2px 16px;
+}
+
+.graph-examples label {
+    color: #355a6e;
+    font-size: 11px;
+    font-weight: 750;
+}
+
+.graph-examples select {
+    min-width: 0;
+    min-height: 36px;
+    flex: 1;
+    padding: 0 9px;
+    border: 1px solid #d6e5ec;
+    border-radius: 8px;
+    color: #23475a;
+    background: #fff;
+    font-size: 11px;
 }
 
 .editor-toolbar {
@@ -444,6 +474,107 @@ h2 {
 .answer-card {
     min-height: 255px;
     padding: 20px;
+}
+
+.algebra-graph-card {
+    margin-top: 18px;
+    padding: 20px;
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.96);
+    box-shadow: 0 15px 40px rgba(29, 75, 99, 0.075);
+}
+
+.graph-heading {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 14px;
+}
+
+.graph-heading-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+.graph-heading h2 {
+    margin-bottom: 0;
+    font-size: 20px;
+}
+
+.graph-description,
+.graph-status {
+    margin: 12px 0;
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.55;
+}
+
+.graph-status:empty {
+    display: none;
+}
+
+.graph-status.error {
+    color: #ad4b47;
+}
+
+.algebra-graph-svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    border: 1px solid #e4edf2;
+    border-radius: 12px;
+    background: #fbfdfe;
+}
+
+.graph-grid-line {
+    stroke: #e7eef2;
+    stroke-width: 1;
+}
+
+.graph-axis {
+    stroke: #718895;
+    stroke-width: 1.5;
+}
+
+.graph-tick {
+    fill: #6c8491;
+    font-family: "Segoe UI", Arial, sans-serif;
+    font-size: 11px;
+}
+
+.graph-axis-label {
+    fill: #355a6e;
+    font-family: "Segoe UI", Arial, sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.graph-identity {
+    fill: rgba(18, 110, 157, 0.11);
+}
+
+.graph-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 16px;
+    margin-top: 12px;
+}
+
+.graph-legend-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    color: #526e7c;
+    font-size: 11px;
+}
+
+.graph-legend-swatch {
+    width: 17px;
+    height: 3px;
+    border-radius: 3px;
 }
 
 .answer-heading {
@@ -660,6 +791,29 @@ h2 {
         align-items: flex-end;
     }
 
+    .graph-examples {
+        align-items: stretch;
+        flex-wrap: wrap;
+    }
+
+    .graph-examples label {
+        width: 100%;
+    }
+
+    .graph-examples select {
+        flex-basis: 55%;
+    }
+
+    .graph-heading {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .graph-heading-actions {
+        width: 100%;
+        justify-content: flex-start;
+    }
+
     .keypad-tab {
         padding: 0 8px;
         font-size: 10px;
@@ -696,6 +850,20 @@ h2 {
 
     .action-buttons button {
         flex: 1;
+    }
+
+    .algebra-graph-card {
+        margin-top: 12px;
+        padding: 13px;
+        border-radius: 13px;
+    }
+
+    .algebra-graph-svg {
+        min-height: 200px;
+    }
+
+    .graph-tick {
+        font-size: 12px;
     }
 }
 

@@ -58,6 +58,9 @@ class CalculatorTests(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertIn(b"Variables", response.data)
         self.assertIn(b"inputmode=\"none\"", response.data)
+        self.assertIn(b"Show algebra graph", response.data)
+        self.assertIn(b"Save as PNG", response.data)
+        self.assertIn(b"Try a graph shape", response.data)
         response.close()
 
         for asset_path in ("/algebra/style.css", "/algebra/script.js"):
@@ -113,6 +116,70 @@ class CalculatorTests(unittest.TestCase):
         fraction_value = fraction_response.get_json()["solutions"][0]["assignments"][0]["value"]
         self.assertEqual(fraction_value, "2/3")
         fraction_response.close()
+
+    def test_algebra_graphs_curves_systems_and_identities(self):
+        curve_response = self.client.post(
+            "/algebra/graph",
+            json={"mode": "solve", "equations": ["x^2 = 4"]},
+        )
+        self.assertEqual(curve_response.status_code, 200)
+        curve = curve_response.get_json()
+        self.assertEqual(curve["plot_type"], "function")
+        self.assertAlmostEqual(curve["traces"][0]["values"][64], 0)
+        self.assertAlmostEqual(curve["traces"][0]["values"][96], 0)
+        curve_response.close()
+
+        implicit_response = self.client.post(
+            "/algebra/graph",
+            json={"mode": "solve", "equations": ["x + y = 5"]},
+        )
+        self.assertEqual(implicit_response.status_code, 200)
+        implicit = implicit_response.get_json()
+        self.assertEqual(implicit["plot_type"], "implicit")
+        self.assertAlmostEqual(implicit["traces"][0]["grid"][30][20], 0)
+        implicit_response.close()
+
+        system_response = self.client.post(
+            "/algebra/graph",
+            json={
+                "mode": "solve",
+                "equations": ["x + y = 5", "x - y = 1"],
+            },
+        )
+        self.assertEqual(system_response.status_code, 200)
+        self.assertEqual(len(system_response.get_json()["traces"]), 2)
+        system_response.close()
+
+        slice_response = self.client.post(
+            "/algebra/graph",
+            json={"mode": "solve", "equations": ["x + y + z = 1"]},
+        )
+        self.assertEqual(slice_response.status_code, 200)
+        self.assertEqual(
+            slice_response.get_json()["slice"],
+            [{"variable": "z", "value": "0"}],
+        )
+        slice_response.close()
+
+        identity_response = self.client.post(
+            "/algebra/graph",
+            json={"mode": "solve", "equations": ["x + y = x + y"]},
+        )
+        self.assertEqual(identity_response.status_code, 200)
+        identity = identity_response.get_json()["traces"][0]
+        self.assertTrue(identity["identity"])
+        self.assertEqual(identity["grid"], [])
+        identity_response.close()
+
+        expression_response = self.client.post(
+            "/algebra/graph",
+            json={"mode": "simplify", "expression": "x^2"},
+        )
+        self.assertEqual(expression_response.status_code, 200)
+        expression_graph = expression_response.get_json()
+        self.assertEqual(expression_graph["value_type"], "expression")
+        self.assertAlmostEqual(expression_graph["traces"][0]["values"][80], 0)
+        expression_response.close()
 
     def test_graph_statistics_route_and_assets_are_available(self):
         response = self.client.get("/graph/")

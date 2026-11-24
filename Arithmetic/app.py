@@ -38,6 +38,8 @@ MAX_ALGEBRA_EXPRESSION_LENGTH = 300
 MAX_ALGEBRA_TOTAL_LENGTH = 1800
 MAX_ALGEBRA_VARIABLES = 12
 MAX_ALGEBRA_EXPONENT = 100
+ALGEBRA_GRAPH_FUNCTION_SAMPLES = 161
+ALGEBRA_GRAPH_GRID_SAMPLES = 41
 
 ALGEBRA_FUNCTIONS = {
     "sqrt", "cbrt", "root", "square", "cube", "exp", "ln", "log",
@@ -1692,6 +1694,120 @@ def simplify_algebra_expression(expression, operation="simplify"):
     }
 
 
+def algebra_graph_numeric_value(expression, substitutions):
+    try:
+        numeric_value = complex(sp.N(expression.subs(substitutions), 15))
+    except (
+        TypeError,
+        ValueError,
+        ZeroDivisionError,
+        OverflowError,
+        RecursionError,
+        NotImplementedError,
+    ):
+        return None
+
+    if (
+        not math.isfinite(numeric_value.real)
+        or not math.isfinite(numeric_value.imag)
+        or abs(numeric_value.imag) > 1e-10
+        or abs(numeric_value.real) > 1e12
+    ):
+        return None
+
+    return float(numeric_value.real)
+
+
+def algebra_graph_data(mode, equations=None, expression=None):
+    if mode in {"solve", "evaluate"}:
+        symbols, variables, relations, _ = parse_algebra_system(equations)
+        cleaned_equations = [equation.strip() for equation in equations if equation.strip()]
+        traces = list(zip(cleaned_equations, relations))
+    elif mode == "simplify":
+        value, symbols = parse_algebra_expression(expression)
+        variables = [symbols[name] for name in sorted(symbols)]
+        traces = [(expression.strip(), value)]
+    else:
+        raise ValueError("Choose an algebra goal before graphing.")
+
+    if len(variables) > 1:
+        x_variable, y_variable = variables[:2]
+        fixed_variables = {variable: 0 for variable in variables[2:]}
+        x_values = [
+            -10 + 20 * index / (ALGEBRA_GRAPH_GRID_SAMPLES - 1)
+            for index in range(ALGEBRA_GRAPH_GRID_SAMPLES)
+        ]
+        y_values = x_values.copy()
+        plotted_traces = []
+
+        for label, relation in traces:
+            identity = relation == 0
+            grid = []
+            if not identity:
+                for y_value in y_values:
+                    row = []
+                    for x_value in x_values:
+                        substitutions = {
+                            **fixed_variables,
+                            x_variable: x_value,
+                            y_variable: y_value,
+                        }
+                        row.append(
+                            algebra_graph_numeric_value(relation, substitutions)
+                        )
+                    grid.append(row)
+            plotted_traces.append({
+                "label": label,
+                "identity": identity,
+                "grid": grid,
+            })
+
+        return {
+            "plot_type": "implicit",
+            "value_type": "expression" if mode == "simplify" else "equation",
+            "variables": [str(x_variable), str(y_variable)],
+            "x_values": x_values,
+            "y_values": y_values,
+            "traces": plotted_traces,
+            "slice": [
+                {"variable": str(variable), "value": "0"}
+                for variable in variables[2:]
+            ],
+        }
+
+    variable = variables[0] if variables else sp.Symbol("x")
+    x_values = [
+        -10 + 20 * index / (ALGEBRA_GRAPH_FUNCTION_SAMPLES - 1)
+        for index in range(ALGEBRA_GRAPH_FUNCTION_SAMPLES)
+    ]
+    plotted_traces = []
+
+    for label, relation in traces:
+        identity = relation == 0
+        values = (
+            [0.0] * len(x_values)
+            if identity
+            else [
+                algebra_graph_numeric_value(relation, {variable: x_value})
+                for x_value in x_values
+            ]
+        )
+        plotted_traces.append({
+            "label": label,
+            "identity": identity,
+            "values": values,
+        })
+
+    return {
+        "plot_type": "function",
+        "value_type": "expression" if mode == "simplify" else "equation",
+        "variables": [str(variable)],
+        "x_values": x_values,
+        "traces": plotted_traces,
+        "slice": [],
+    }
+
+
 # ---------------------------------------------------------
 # FLASK ROUTES
 # ---------------------------------------------------------
@@ -1825,6 +1941,47 @@ def algebra_solve():
         return jsonify({
             "error": str(error),
             "recommendation": recommendation,
+        }), 400
+
+
+@app.route("/algebra/graph", methods=["POST"])
+def algebra_graph():
+    data = request.get_json(silent=True)
+    if not isinstance(data, dict):
+        return jsonify({
+            "error": "Send your graph request as a JSON object.",
+            "recommendation": "Choose a goal, then enter an expression or equations to graph.",
+        }), 400
+
+    mode = data.get("mode")
+    if not isinstance(mode, str) or mode not in {"solve", "evaluate", "simplify"}:
+        return jsonify({
+            "error": "Please select an algebra goal before graphing.",
+            "recommendation": "Choose a goal and enter the matching expression or equations.",
+        }), 400
+
+    try:
+        return jsonify(algebra_graph_data(
+            mode,
+            equations=data.get("equations"),
+            expression=data.get("expression"),
+        ))
+    except (
+        SyntaxError,
+        ValueError,
+        TypeError,
+        NotImplementedError,
+        RecursionError,
+        ZeroDivisionError,
+        OverflowError,
+        sp.PolynomialError,
+    ) as error:
+        return jsonify({
+            "error": str(error),
+            "recommendation": (
+                "Check the expression or equation lines. Graphing supports real-valued curves "
+                "over the displayed range; non-real or undefined points are skipped."
+            ),
         }), 400
 
 
