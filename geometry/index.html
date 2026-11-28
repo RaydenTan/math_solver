@@ -1,0 +1,329 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta
+            name="description"
+            content="Solve common geometry problems with formulas, worked steps and diagrams."
+        />
+        <title>Geometry Solver v2 | Math Solver++</title>
+        <link rel="icon" type="image/png" href="../icon.png" />
+        <link rel="stylesheet" href="style.css" />
+        <script src="script.js" defer></script>
+    </head>
+    <body>
+        <header class="site-header">
+            <a class="brand" href="/">
+                <img src="../icon.png" alt="" />
+                <span>math solver<span class="brand-plus">++</span></span>
+            </a>
+            <a class="home-link" href="/">Back to home <span aria-hidden="true">↗</span></a>
+        </header>
+
+        <main class="page-shell">
+            <section class="page-heading">
+                <p class="eyebrow">MATH SOLVER++ TOOLKIT</p>
+                <h1>Geometry solver <span class="page-version">v2</span></h1>
+                <p class="intro">
+                    Describe the diagram and the math question separately.
+                    Add a photo if you have one, then review the interpretation
+                    before revealing the worked solution.
+                </p>
+            </section>
+
+            <section class="workspace" aria-label="Geometry solver">
+                <div class="workspace-main">
+                    <section class="image-input" aria-labelledby="picture-heading">
+                        <div>
+                            <h2 id="picture-heading">Set up the diagram</h2>
+                            <p>
+                                Describe the shapes and how they fit together.
+                                You can also add a photo for Python to inspect.
+                            </p>
+                        </div>
+                        <div class="diagram-input-row">
+                            <label class="visually-hidden" for="diagram-description">
+                                Describe the diagram
+                            </label>
+                            <textarea
+                                id="diagram-description"
+                                rows="3"
+                                placeholder="For example: A triangle is inside a circle. Three small circles are inside one large circle."
+                                aria-describedby="diagram-help"
+                            ></textarea>
+                            <button
+                                class="photo-button"
+                                id="choose-image"
+                                type="button"
+                                aria-label="Take a photo or choose one from your gallery"
+                                title="Take a photo or choose one from your gallery"
+                            >
+                                <svg viewBox="0 0 24 24" aria-hidden="true">
+                                    <path d="M4 7h3l1.5-2h7L17 7h3v12H4z" />
+                                    <circle cx="12" cy="13" r="4" />
+                                </svg>
+                                <span>Photo</span>
+                            </button>
+                            <input
+                                id="problem-image"
+                                type="file"
+                                accept="image/*"
+                                hidden
+                            />
+                        </div>
+                        <div class="symbol-tools" aria-label="Diagram symbols">
+                            <span>Insert symbol:</span>
+                            <button
+                                class="symbol-button"
+                                type="button"
+                                data-symbol="△"
+                                data-target="diagram-description"
+                                aria-label="Insert triangle symbol into diagram description"
+                                title="Insert triangle symbol"
+                            >△</button>
+                            <button
+                                class="symbol-button"
+                                type="button"
+                                data-symbol="○"
+                                data-target="diagram-description"
+                                aria-label="Insert circle symbol into diagram description"
+                                title="Insert circle symbol"
+                            >○</button>
+                            <button
+                                class="symbol-button"
+                                type="button"
+                                data-symbol="□"
+                                data-target="diagram-description"
+                                aria-label="Insert square symbol into diagram description"
+                                title="Insert square symbol"
+                            >□</button>
+                            <button
+                                class="symbol-button"
+                                type="button"
+                                data-symbol="∠"
+                                data-target="diagram-description"
+                                aria-label="Insert angle symbol into diagram description"
+                                title="Insert angle symbol"
+                            >∠</button>
+                            <button
+                                class="symbol-button"
+                                type="button"
+                                data-symbol="°"
+                                data-target="diagram-description"
+                                aria-label="Insert degree symbol into diagram description"
+                                title="Insert degree symbol"
+                            >°</button>
+                            <button
+                                class="symbol-button"
+                                type="button"
+                                data-symbol="π"
+                                data-target="diagram-description"
+                                aria-label="Insert pi symbol into diagram description"
+                                title="Insert pi symbol"
+                            >π</button>
+                            <button
+                                class="symbol-button"
+                                type="button"
+                                data-symbol="∥"
+                                data-target="diagram-description"
+                                aria-label="Insert parallel symbol into diagram description"
+                                title="Parallel"
+                            >∥</button>
+                            <button
+                                class="symbol-button"
+                                type="button"
+                                data-symbol="⊥"
+                                data-target="diagram-description"
+                                aria-label="Insert perpendicular symbol into diagram description"
+                                title="Perpendicular"
+                            >⊥</button>
+                            <button
+                                class="symbol-button"
+                                type="button"
+                                data-symbol="≅"
+                                data-target="diagram-description"
+                                aria-label="Insert congruent symbol into diagram description"
+                                title="Congruent"
+                            >≅</button>
+                            <button
+                                class="symbol-button"
+                                type="button"
+                                data-symbol="∼"
+                                data-target="diagram-description"
+                                aria-label="Insert similar symbol into diagram description"
+                                title="Similar"
+                            >∼</button>
+                        </div>
+                        <p class="field-help" id="diagram-help">
+                            On a phone or tablet, the photo picker can offer
+                            Camera and Photo Library. On a computer, choose an
+                            image file. Python will read printed text and look
+                            for common shape outlines. Describe the relationships
+                            here too so you can correct anything it misses.
+                        </p>
+                        <img id="image-preview" alt="Preview of the selected problem" hidden />
+                        <div class="image-actions" id="image-actions" hidden>
+                            <span id="image-status" role="status"></span>
+                        </div>
+                    </section>
+
+                    <section class="question-input" aria-labelledby="question-heading">
+                        <label class="field-label" id="question-heading" for="question">
+                            What is the question?
+                        </label>
+                        <textarea
+                            id="question"
+                            rows="3"
+                            placeholder="For example: The circle has radius 5 cm. Find its area."
+                            aria-describedby="question-help"
+                        ></textarea>
+                        <div class="symbol-tools" aria-label="Question symbols">
+                            <span>Insert symbol:</span>
+                            <button
+                                class="symbol-button"
+                                type="button"
+                                data-symbol="△"
+                                data-target="question"
+                                aria-label="Insert triangle symbol into question"
+                                title="Insert triangle symbol"
+                            >△</button>
+                            <button
+                                class="symbol-button"
+                                type="button"
+                                data-symbol="○"
+                                data-target="question"
+                                aria-label="Insert circle symbol into question"
+                                title="Insert circle symbol"
+                            >○</button>
+                            <button
+                                class="symbol-button"
+                                type="button"
+                                data-symbol="□"
+                                data-target="question"
+                                aria-label="Insert square symbol into question"
+                                title="Insert square symbol"
+                            >□</button>
+                            <button
+                                class="symbol-button"
+                                type="button"
+                                data-symbol="∠"
+                                data-target="question"
+                                aria-label="Insert angle symbol into question"
+                                title="Insert angle symbol"
+                            >∠</button>
+                            <button
+                                class="symbol-button"
+                                type="button"
+                                data-symbol="°"
+                                data-target="question"
+                                aria-label="Insert degree symbol into question"
+                                title="Insert degree symbol"
+                            >°</button>
+                            <button
+                                class="symbol-button"
+                                type="button"
+                                data-symbol="π"
+                                data-target="question"
+                                aria-label="Insert pi symbol into question"
+                                title="Insert pi symbol"
+                            >π</button>
+                            <button
+                                class="symbol-button"
+                                type="button"
+                                data-symbol="∥"
+                                data-target="question"
+                                aria-label="Insert parallel symbol into question"
+                                title="Parallel"
+                            >∥</button>
+                            <button
+                                class="symbol-button"
+                                type="button"
+                                data-symbol="⊥"
+                                data-target="question"
+                                aria-label="Insert perpendicular symbol into question"
+                                title="Perpendicular"
+                            >⊥</button>
+                            <button
+                                class="symbol-button"
+                                type="button"
+                                data-symbol="≅"
+                                data-target="question"
+                                aria-label="Insert congruent symbol into question"
+                                title="Congruent"
+                            >≅</button>
+                            <button
+                                class="symbol-button"
+                                type="button"
+                                data-symbol="∼"
+                                data-target="question"
+                                aria-label="Insert similar symbol into question"
+                                title="Similar"
+                            >∼</button>
+                        </div>
+                        <p class="field-help" id="question-help">
+                            Put the measurements and what you need to find here.
+                            OCR text from a photo is added to this box.
+                        </p>
+                    </section>
+
+                    <div class="solve-row">
+                        <button class="primary-button" id="solve" type="button">
+                            Analyze with Python and draw diagram
+                            <span aria-hidden="true">→</span>
+                        </button>
+                    </div>
+                </div>
+
+                <aside class="answer-card" aria-live="polite">
+                    <p class="eyebrow">INTERPRETATION &amp; SOLUTION</p>
+                    <h2 id="answer-heading">Your diagram will appear here</h2>
+                    <p id="answer-message">
+                        Describe the diagram above and enter the math question
+                        below.
+                    </p>
+                    <div class="diagram-wrap">
+                        <img id="diagram-image" alt="Python-generated geometry diagram" hidden />
+                        <p id="diagram-caption">Your described diagram will appear here.</p>
+                        <div class="diagram-legend" aria-label="Diagram legend">
+                            <span><i class="legend-target"></i>Target shape</span>
+                            <span><i class="legend-context"></i>Related shape</span>
+                            <span><i class="legend-measure"></i>Measurement guide</span>
+                        </div>
+                        <div class="diagram-save-row">
+                            <button class="secondary-button" id="save-diagram" type="button">
+                                Save diagram (SVG)
+                            </button>
+                            <span id="diagram-save-status" role="status"></span>
+                        </div>
+                    </div>
+                    <section class="interpretation" id="interpretation" hidden>
+                        <h3>What I understood</h3>
+                        <ul id="interpretation-items"></ul>
+                        <button
+                            class="primary-button"
+                            id="confirm-interpretation"
+                            type="button"
+                            hidden
+                        >
+                            Confirm and reveal steps
+                        </button>
+                    </section>
+                    <section class="explanation" id="explanation" hidden>
+                        <h3>Follow the reasoning</h3>
+                        <ol id="answer-steps"></ol>
+                        <button class="secondary-button" id="next-step" type="button" hidden>
+                            Show next step
+                        </button>
+                    </section>
+                    <p class="limitation">
+                        Generated diagrams are schematic, not to scale. Photo
+                        shape detection and OCR can make mistakes; check the
+                        interpretation and use the description boxes to correct
+                        it. The solver does not prove arbitrary geometry theorems.
+                    </p>
+                </aside>
+            </section>
+        </main>
+    </body>
+</html>

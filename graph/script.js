@@ -99,6 +99,7 @@ const samples = {
 };
 
 let rows = [];
+let analysisRequest = 0;
 
 function makeSvg(tagName, attributes = {}, text = "") {
     const node = document.createElementNS(svgNamespace, tagName);
@@ -176,13 +177,11 @@ function quartiles(sorted) {
     };
 }
 
-function renderStatistics() {
-    const values = getYValues().map((entry) => entry.value);
+function renderStatistics(result) {
     elements.statsSummary.replaceChildren();
 
-    if (values.length === 0) {
-        elements.statsDescription.textContent =
-            "Calculated from the valid Y values in your table.";
+    elements.statsDescription.textContent = result.statistics_description;
+    if (result.statistics.length === 0) {
         const note = document.createElement("p");
         note.className = "empty-note";
         note.textContent = "Add at least one numeric Y value to see statistics.";
@@ -190,47 +189,7 @@ function renderStatistics() {
         return;
     }
 
-    const sorted = [...values].sort((a, b) => a - b);
-    const { q1, median: middle, q3 } = quartiles(sorted);
-    const sum = values.reduce((total, value) => total + value, 0);
-    const mean = sum / values.length;
-    const frequencies = new Map();
-    values.forEach((value) => {
-        frequencies.set(value, (frequencies.get(value) || 0) + 1);
-    });
-    const highestFrequency = Math.max(...frequencies.values());
-    const modes = highestFrequency > 1
-        ? [...frequencies.entries()]
-            .filter(([, frequency]) => frequency === highestFrequency)
-            .map(([value]) => formatNumber(value))
-            .join(", ")
-        : "No repeated value";
-    const squaredDifferences = values.reduce(
-        (total, value) => total + (value - mean) ** 2,
-        0,
-    );
-    const standardDeviation = Math.sqrt(squaredDifferences / values.length);
-    const sampleDeviation = values.length > 1
-        ? Math.sqrt(squaredDifferences / (values.length - 1))
-        : null;
-
-    elements.statsDescription.textContent =
-        `${values.length} numeric Y value${values.length === 1 ? "" : "s"} included. Empty cells are skipped.`;
-    [
-        ["Count", String(values.length)],
-        ["Sum", formatNumber(sum)],
-        ["Mean", formatNumber(mean)],
-        ["Median", formatNumber(middle)],
-        ["Mode", modes],
-        ["Minimum", formatNumber(sorted[0])],
-        ["Maximum", formatNumber(sorted[sorted.length - 1])],
-        ["Range", formatNumber(sorted[sorted.length - 1] - sorted[0])],
-        ["Q1", formatNumber(q1)],
-        ["Q3", formatNumber(q3)],
-        ["IQR", formatNumber(q3 - q1)],
-        ["Population SD", formatNumber(standardDeviation)],
-        ["Sample SD", sampleDeviation === null ? "—" : formatNumber(sampleDeviation)],
-    ].forEach(([label, value]) => addStat(label, value));
+    result.statistics.forEach(({ label, value }) => addStat(label, value));
 }
 
 function setChartError(message) {
@@ -240,6 +199,7 @@ function setChartError(message) {
 
 function showChartMessage(message) {
     elements.chart.replaceChildren();
+    elements.chart.setAttribute("viewBox", "0 0 800 440");
     elements.chart.append(
         makeSvg("text", {
             x: 400,
@@ -1503,7 +1463,7 @@ function hasInvalidNumericInput() {
     });
 }
 
-function renderChart() {
+function renderChartLegacy() {
     setChartError("");
     updateChartHelp();
     const type = elements.chartType.value;
@@ -1614,9 +1574,103 @@ function renderChart() {
         : `${plottedCount} plotted value${plottedCount === 1 ? "" : "s"}. Hover or tap a mark to see its value.`;
 }
 
-function renderAll() {
-    renderStatistics();
-    renderChart();
+function renderChart(result) {
+    updateChartHelp();
+    const type = elements.chartType.value;
+    elements.chartTable.hidden = type !== "table";
+    elements.chart.hidden = type === "table";
+    elements.chart.classList.toggle("is-hidden", type === "table");
+
+    if (type === "table") {
+        setChartError("");
+        renderDataTable();
+        elements.chartCaption.textContent =
+            `${rows.length} data row${rows.length === 1 ? "" : "s"} shown in the table.`;
+        return;
+    }
+
+    if (result.chart_error) {
+        setChartError(result.chart_error);
+        showChartMessage(result.chart_error);
+        return;
+    }
+
+    const parsedSvg = new DOMParser().parseFromString(result.chart_svg, "image/svg+xml");
+    const svgRoot = parsedSvg.documentElement;
+    if (
+        parsedSvg.querySelector("parsererror")
+        || svgRoot.localName !== "svg"
+        || svgRoot.namespaceURI !== svgNamespace
+    ) {
+        throw new Error("Python returned an invalid chart image.");
+    }
+    setChartError("");
+    elements.chart.setAttribute("viewBox", svgRoot.getAttribute("viewBox") || "0 0 576 316.8");
+    elements.chart.replaceChildren(
+        ...[...svgRoot.childNodes].map((node) => document.importNode(node, true)),
+    );
+    elements.chart.setAttribute(
+        "aria-label",
+        `${chartTitle()} ${elements.chartType.options[elements.chartType.selectedIndex].textContent}`,
+    );
+    const skippedCount = result.row_count - result.plotted_count;
+    elements.chartCaption.textContent = type === "stem"
+        ? "Leaves preserve values rounded to tenths."
+        : skippedCount > 0
+        ? `${result.plotted_count} plotted row${result.plotted_count === 1 ? "" : "s"}. Blank numeric cells are skipped. ${result.chart_caption}`
+        : `${result.plotted_count} plotted row${result.plotted_count === 1 ? "" : "s"}. ${result.chart_caption}`;
+}
+
+async function renderAll() {
+    const requestId = ++analysisRequest;
+    updateChartHelp();
+    const selectedType = elements.chartType.value;
+    const requestType = selectedType === "table" ? "bar" : selectedType;
+
+    try {
+        const response = await fetch("/graph/analyze", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                type: requestType,
+                title: chartTitle(),
+                x_label: elements.xAxisLabel.value,
+                y_label: elements.yAxisLabel.value,
+                rows,
+            }),
+        });
+        let result;
+        try {
+            result = await response.json();
+        } catch {
+            throw new Error("The Python service returned an unreadable graph result.");
+        }
+        if (!response.ok) {
+            throw new Error(result.error || `The Python service returned ${response.status}.`);
+        }
+        if (
+            !result
+            || !Array.isArray(result.statistics)
+            || typeof result.chart_svg !== "string"
+            || typeof result.chart_error !== "string"
+        ) {
+            throw new Error("The Python service returned an incomplete graph result.");
+        }
+        if (requestId !== analysisRequest) return result;
+        renderStatistics(result);
+        renderChart(result);
+        return result;
+    } catch (error) {
+        if (requestId !== analysisRequest) return null;
+        const errorMessage = error instanceof Error
+            ? error.message
+            : "The Python service could not analyze this data.";
+        elements.statsDescription.textContent = errorMessage;
+        elements.statsSummary.replaceChildren();
+        setChartError(errorMessage);
+        showChartMessage(errorMessage);
+        return null;
+    }
 }
 
 function renderEditor() {
@@ -1943,7 +1997,7 @@ function createReportSvg(chartCopy, selectedType) {
         report,
         1080,
         198,
-        `${getYValues().length} numeric Y values`,
+        `${elements.statsSummary.querySelector(".stat-value")?.textContent || "0"} numeric Y values`,
         12,
         "#647d8b",
     );
@@ -2034,14 +2088,17 @@ function createReportSvg(chartCopy, selectedType) {
     return report;
 }
 
-function currentChartForReport() {
+async function currentChartForReport() {
     const selectedType = elements.chartType.value;
     let chartCopy;
     let chartError = "";
     try {
         if (selectedType === "table") {
             elements.chartType.value = "bar";
-            renderChart();
+        }
+        const result = await renderAll();
+        if (!result) {
+            chartError = elements.chartError.textContent || "Python could not render the chart.";
         }
         if (!elements.chartError.hidden) {
             chartError = elements.chartError.textContent;
@@ -2050,7 +2107,7 @@ function currentChartForReport() {
         }
     } finally {
         elements.chartType.value = selectedType;
-        renderChart();
+        await renderAll();
     }
     if (chartError) {
         throw new Error(`Fix the chart before exporting: ${chartError}`);
@@ -2060,7 +2117,7 @@ function currentChartForReport() {
 
 async function downloadReportImage() {
     elements.dataStatus.textContent = "Preparing the chart, statistics, and data table...";
-    const { chartCopy, selectedType } = currentChartForReport();
+    const { chartCopy, selectedType } = await currentChartForReport();
     const report = createReportSvg(chartCopy, selectedType);
     const svgBlob = new Blob(
         [new XMLSerializer().serializeToString(report)],

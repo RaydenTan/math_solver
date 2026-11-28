@@ -1,0 +1,148 @@
+.help-home-link {
+    color: var(--ocean);
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.help-home-link:hover {
+    color: var(--ocean-deep);
+}
+
+.help-shell {
+    width: min(940px, calc(100% - 40px));
+    min-height: calc(100vh - 78px);
+    margin: 0 auto;
+    padding: 66px 0 56px;
+}
+
+.help-heading {
+    max-width: 650px;
+    margin: 0 auto 34px;
+    text-align: center;
+}
+
+.help-heading .eyebrow {
+    margin-bottom: 12px;
+}
+
+.help-heading h1 {
+    margin-bottom: 13px;
+    font-size: clamp(38px, 6vw, 58px);
+    letter-spacing: -2.6px;
+}
+
+.help-heading h1 span {
+    color: var(--ocean);
+}
+
+.help-heading > p:last-child {
+    margin-bottom: 0;
+    color: var(--muted);
+    font-size: 15px;
+    line-height: 1.7;
+}
+
+.help-options {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.help-card {
+    display: flex;
+    min-height: 280px;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 26px;
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    background: #fff;
+    box-shadow: 0 13px 35px rgba(24, 67, 91, 0.06);
+}
+
+.help-icon {
+    display: grid;
+    width: 43px;
+    height: 43px;
+    place-items: center;
+    margin-bottom: 24px;
+    border-radius: 14px;
+    font-size: 21px;
+    font-weight: 800;
+}
+
+.feedback-icon {
+    color: #176f98;
+    background: #e5f4fa;
+}
+
+.issue-icon {
+    color: #9c6230;
+    background: #fff2df;
+}
+
+.help-card .eyebrow {
+    margin-bottom: 8px;
+}
+
+.help-card h2 {
+    margin-bottom: 9px;
+    font-size: 23px;
+}
+
+.help-card > p:not(.eyebrow) {
+    margin-bottom: 22px;
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.7;
+}
+
+.help-button {
+    display: inline-flex;
+    min-height: 43px;
+    align-items: center;
+    gap: 12px;
+    margin-top: auto;
+    padding: 0 15px;
+    border-radius: 9px;
+    color: #fff;
+    background: var(--ocean);
+    font-size: 12px;
+    font-weight: 700;
+    transition: background 160ms ease, transform 160ms ease;
+}
+
+.help-button:hover {
+    background: var(--ocean-deep);
+    transform: translateY(-1px);
+}
+
+.forms-note {
+    margin: 18px 0 0;
+    color: var(--muted);
+    font-size: 11px;
+    text-align: center;
+}
+
+@media (max-width: 620px) {
+    .help-shell {
+        padding: 48px 0;
+    }
+
+    .help-heading {
+        margin-bottom: 25px;
+    }
+
+    .help-options {
+        grid-template-columns: 1fr;
+    }
+
+    .help-card {
+        min-height: 0;
+        padding: 22px;
+    }
+
+    .help-icon {
+        margin-bottom: 18px;
+    }
+}

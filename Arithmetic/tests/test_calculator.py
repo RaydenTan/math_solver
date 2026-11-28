@@ -12,10 +12,15 @@ class CalculatorTests(unittest.TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertIn(b"Math Solver++", response.data)
+        self.assertIn(b"Math Solver++ v1.2", response.data)
+        self.assertIn(b"PYTHON-POWERED TOOLKIT", response.data)
+        self.assertIn(b"All five tools use Python-powered backends", response.data)
+        self.assertIn(b"Need help?", response.data)
         self.assertIn(b"/scientific-calculator", response.data)
         self.assertIn(b"/unit-converter/", response.data)
         self.assertIn(b"/algebra/", response.data)
         self.assertIn(b"/graph/", response.data)
+        self.assertEqual(response.data.count(b'class="tool-version">v2'), 5)
         self.assertIn(b"style.css", response.data)
         self.assertIn(b"script.js", response.data)
         response.close()
@@ -33,11 +38,33 @@ class CalculatorTests(unittest.TestCase):
         calculator_response = self.client.get("/scientific-calculator")
         self.assertEqual(calculator_response.status_code, 200)
         self.assertIn(b"Scientific Calculator", calculator_response.data)
+        self.assertIn(b"v2", calculator_response.data)
+
+    def test_help_page_links_to_feedback_and_issue_forms(self):
+        response = self.client.get("/help/")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b"Send feedback", response.data)
+        self.assertIn(b"Report an issue", response.data)
+        self.assertIn(
+            b"https://docs.google.com/forms/d/e/1FAIpQLSeIz6iXEIVMGh44CxWef_eSwROrhuPNnoi-VeljPFY4ClNw9g/viewform",
+            response.data,
+        )
+        self.assertIn(
+            b"https://docs.google.com/forms/d/e/1FAIpQLScgWbr1MBTYaGzGyRH30ERydo0RcuTAdG3x6fV0iI3GQAoOcA/viewform",
+            response.data,
+        )
+        response.close()
+
+        stylesheet = self.client.get("/help/style.css")
+        self.assertEqual(stylesheet.status_code, 200)
+        stylesheet.close()
 
     def test_unit_converter_route_and_assets_are_available(self):
         response = self.client.get("/unit-converter/")
 
         self.assertEqual(response.status_code, 200)
+        self.assertIn(b"v2", response.data)
         self.assertIn(b"category-tabs", response.data)
         self.assertIn(b"script.js", response.data)
         response.close()
@@ -49,13 +76,13 @@ class CalculatorTests(unittest.TestCase):
             asset_response = self.client.get(asset_path)
             self.assertEqual(asset_response.status_code, 200)
             if asset_path.endswith("script.js"):
-                self.assertIn(b"Temperature", asset_response.data)
-                self.assertIn(b"Digital data", asset_response.data)
+                self.assertIn(b"/unit-converter/data", asset_response.data)
             asset_response.close()
 
     def test_algebra_solver_routes_and_solves_symbolic_equations(self):
         response = self.client.get("/algebra/")
         self.assertEqual(response.status_code, 200)
+        self.assertIn(b"v2", response.data)
         self.assertIn(b"Variables", response.data)
         self.assertIn(b"inputmode=\"none\"", response.data)
         self.assertIn(b"Show algebra graph", response.data)
@@ -186,6 +213,7 @@ class CalculatorTests(unittest.TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertIn(b"Graphs &amp; statistics", response.data)
+        self.assertIn(b"v2", response.data)
         self.assertIn(b"Import CSV", response.data)
         self.assertIn(b"Q-Q plot", response.data)
         self.assertIn(b"Pareto chart", response.data)
